@@ -18,7 +18,7 @@ Bootstrap state. The repo exists with the standard atoms scaffold; the catalog i
 ```
 skills/                         catalog content (empty — skills land here)
 schemas/                        local schema references; canonical schemas live in schema-atoms
-web/site/                       Astro static site → skill-atoms.convergent-systems.co
+web/                            Astro static site → skill-atoms.convergent-systems.co
 infra/terraform/                Cloudflare Pages + DNS via core-infra v0.1.0 pages-project module
 .github/workflows/              CI: build, tf-plan, secret-scan, release-to-pages
 ATOMS.yml                       catalog manifest (conforms to atoms-spec/v1)
@@ -38,7 +38,7 @@ ATOMS.yml                       catalog manifest (conforms to atoms-spec/v1)
 ## Local development
 
 ```bash
-cd web/site
+cd web
 npm install
 npm run dev
 ```
