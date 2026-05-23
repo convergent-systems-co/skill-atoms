@@ -3,26 +3,63 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
 
-# CLOUDFLARE_API_TOKEN from env, never in code. See ~/.ai/Common.md §4.
-# Required token scopes:
-#   - Account → Cloudflare Pages → Edit
-#   - Zone → DNS → Edit (for the convergent-systems.co zone)
-provider "cloudflare" {}
+# Multi-provider setup: this module touches account-level Pages resources
+# and zone-level DNS records. After the 2026-05-23 core-infra token split,
+# each plane has its own narrow API token (see ~/.ai/Common.md §4 and
+# convergent-systems-co/core-infra/terraform/cloudflare/{account,dns}-token).
+#
+# Tokens passed in as sensitive TF variables. Populate from 1Password before
+# apply (see variables below) or via the cs-tofu wrapper at
+# convergent-systems-co/core-infra/scripts/cs-tofu.
 
-module "pages_project" {
-  source = "git::https://github.com/convergent-systems-co/core-infra.git//terraform/cloudflare/pages-project?ref=v0.1.0"
-
-  cloudflare_account_id = var.cloudflare_account_id
-  project_name          = "skill-atoms"
-  production_branch     = "main"
-  custom_domain         = "skill-atoms.convergent-systems.co"
-  zone_id               = var.zone_id
+provider "cloudflare" {
+  alias     = "account"
+  api_token = var.account_token
 }
+
+provider "cloudflare" {
+  alias     = "dns"
+  api_token = var.dns_token
+}
+
+# --- Pages project + custom domain (account-scoped) -------------------------
+
+resource "cloudflare_pages_project" "this" {
+  provider          = cloudflare.account
+  account_id        = var.cloudflare_account_id
+  name              = "skill-atoms"
+  production_branch = "main"
+}
+
+resource "cloudflare_pages_domain" "custom" {
+  provider     = cloudflare.account
+  account_id   = var.cloudflare_account_id
+  project_name = cloudflare_pages_project.this.name
+  name         = "skill-atoms.com"
+}
+
+# --- DNS record at the zone apex (zone-scoped) ------------------------------
+
+resource "cloudflare_dns_record" "pages_cname" {
+  provider = cloudflare.dns
+  zone_id  = var.zone_id
+  name     = "skill-atoms.com"
+  type     = "CNAME"
+  content  = "${cloudflare_pages_project.this.name}.pages.dev"
+  proxied  = true
+  ttl      = 1 # 1 = "auto" — required when proxied
+
+  comment = "Cloudflare Pages apex — managed by terraform"
+
+  depends_on = [cloudflare_pages_domain.custom]
+}
+
+# --- Inputs -----------------------------------------------------------------
 
 variable "cloudflare_account_id" {
   description = "Cloudflare account ID that owns the Pages project."
@@ -30,20 +67,50 @@ variable "cloudflare_account_id" {
 }
 
 variable "zone_id" {
-  description = "Cloudflare zone ID for convergent-systems.co. Look up via `dash.cloudflare.com → convergent-systems.co → Overview → Zone ID`."
+  description = "Cloudflare zone ID for skill-atoms.com."
   type        = string
 }
 
+variable "account_token" {
+  description = "Cloudflare API token with Account Pages Edit scope. Minted by terraform/cloudflare/account-token in core-infra. Populate from 'Convergent Systems - Account' in 1Password Developer vault."
+  type        = string
+  sensitive   = true
+}
+
+variable "dns_token" {
+  description = "Cloudflare API token with Zone DNS Edit scope. Minted by terraform/cloudflare/dns-token in core-infra. Populate from 'Convergent Systems - DNS' in 1Password Developer vault."
+  type        = string
+  sensitive   = true
+}
+
+# --- Outputs ----------------------------------------------------------------
+
 output "project_name" {
-  value = module.pages_project.project_name
+  value = cloudflare_pages_project.this.name
 }
 
 output "subdomain" {
-  value       = module.pages_project.subdomain
+  value       = cloudflare_pages_project.this.subdomain
   description = "Default *.pages.dev hostname for the project."
 }
 
 output "custom_domain" {
-  value       = module.pages_project.custom_domain
-  description = "Custom hostname attached to the Pages project."
+  value       = cloudflare_pages_domain.custom.name
+  description = "Apex custom domain attached to the Pages project."
+}
+
+# --- State migration --------------------------------------------------------
+# Previously these resources lived under module.pages_project.* (core-infra
+# v0.1.0 module). The new split-token pattern uses inline aliased providers,
+# so the resources move into root. moved {} blocks reassign state pointers
+# without destroy-and-create.
+
+moved {
+  from = module.pages_project.cloudflare_pages_project.this
+  to   = cloudflare_pages_project.this
+}
+
+moved {
+  from = module.pages_project.cloudflare_pages_domain.custom[0]
+  to   = cloudflare_pages_domain.custom
 }
