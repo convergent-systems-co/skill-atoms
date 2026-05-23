@@ -3,7 +3,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -20,7 +20,7 @@ module "pages_project" {
   cloudflare_account_id = var.cloudflare_account_id
   project_name          = "skill-atoms"
   production_branch     = "main"
-  custom_domain         = "skill-atoms.convergent-systems.co"
+  custom_domain         = "skill-atoms.com"
   zone_id               = var.zone_id
 }
 
@@ -30,7 +30,7 @@ variable "cloudflare_account_id" {
 }
 
 variable "zone_id" {
-  description = "Cloudflare zone ID for convergent-systems.co. Look up via `dash.cloudflare.com → convergent-systems.co → Overview → Zone ID`."
+  description = "Cloudflare zone ID for skill-atoms.com."
   type        = string
 }
 
