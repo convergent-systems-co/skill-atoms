@@ -1,40 +1,29 @@
 # ATOMS.yml — catalog manifest for skill-atoms
 #
-# See https://github.com/convergent-systems-co/atoms-spec for the canonical schema this conforms to.
-#
-# NOTE: This manifest reflects the convention shared by sibling *-atoms repos
-# (persona-atoms, brand-atoms, theme-atoms). It will be migrated to the new
-# top-level-type taxonomy as part of sub-project 4 — see
-# convergent-systems-co/atoms docs/superpowers/specs/2026-05-23-atoms-type-taxonomy-design.md
+# Conforms to: https://schema-atoms.com/
+# spec_version: atoms-spec/v1.1.0
 
+spec_version: atoms-spec/v1.1.0
 name: skill-atoms
 version: 0.1.0
-spec: atoms-spec/v1
-domain: skill-atoms.com
-ecosystem:
-  federation: xdao.co
-  redirect: skill.xdao.co
-
-purpose: |
+canonical_domain: skill-atoms.com
+federation: convergent-systems.co
+description: |
   Skill primitives for AI runtimes — discoverable, invocable units of capability that agents
   load on demand. Each skill bundles a description, an invocation contract, and the prompt or
   reference material the agent needs to perform a bounded task. Composable, versioned, and
   catalog-addressable.
-
 # Per the v0.1 taxonomy spec, skill-atoms hosts a single top-level type: `skill`.
 # Sub-types and the per-instance schema are deferred to sub-project 2 (schema authoring).
-atomTypes: []   # TBD — sub-project 2 authors the skill schema in schema-atoms
-
-compositionType: skills
-compositionDir: skills
-
-ruleTypes: []   # TBD — sub-project 5 (conformance wiring)
-
-runtimeConsumers:
+atom_types: []   # TBD — sub-project 2 authors the skill schema in schema-atoms
+composition_type: skills
+composition_dir: skills
+runtime_consumers:
   - aish
   - olympus
-
-license: Apache-2.0
-maintainers:
-  - name: Convergent Systems
-    contact: maintainers@xdao.co
+lifecycle:
+  current: draft
+licensing:
+  code: Apache-2.0
+steward: convergent-systems-co
+infrastructure_operator: convergent-systems-co
