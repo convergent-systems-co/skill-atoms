@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="How to use" description="How to consume skill-atoms in your application.">
+  <h1>How to use skill-atoms</h1>
+
+  <h2>Read the catalog over HTTPS</h2>
+  <p>Every artifact is served under stable URLs with correct content-types:</p>
+  <pre><code>curl https://skill-atoms.com/exports/catalog.json
+curl https://skill-atoms.com/atoms/skill/code-review.json
+curl https://skill-atoms.com/skills/code-review.json
+curl https://skill-atoms.com/schemas/composition-v1.json</code></pre>
+
+  <h2>Load a skill at runtime</h2>
+  <p>A skill composition bundles the description, invocation contract, and prompt reference an agent
+  needs to perform a bounded task. Load it on demand — no pre-registration required.</p>
+
+  <pre><code>{`// pseudo-code
+const skill = await fetch("/skills/code-review.json").then(r => r.json());
+const contract = skill.references.invocation_contract;
+const trustBoundary = skill.references.trust_boundary;
+
+// Validate caller's inputs against the contract
+validate(inputs, contract.input_schema);
+
+// Invoke via the runtime
+const result = await runtime.invoke(skill.id, inputs, { trust: trustBoundary });`}</code></pre>
+
+  <h2>Compatibility rules</h2>
+  <p>Rules in <a href="/exports/catalog.json"><code>/exports/catalog.json</code></a> (under the <code>rules</code>
+  key) declare predicates over atoms. Example: a skill with <code>elevation: privileged</code> requires
+  an explicit trust-boundary grant. A composition that violates a <code>require</code>-effect rule is malformed.</p>
+
+  <h2>Runtime consumers</h2>
+  <p>v0.1 targets aish and Olympus. Framework adapters that translate skill-atoms into native skill
+  registrations for other runtimes are v0.2 work.</p>
+</Base>

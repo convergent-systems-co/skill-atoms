@@ -1,0 +1,92 @@
+---
+import Base from "../../../layouts/Base.astro";
+import catalog from "../../../../public/exports/catalog.json";
+
+export function getStaticPaths() {
+  return catalog.atoms.map((atom: any) => ({
+    params: { type: atom.type, id: atom.id },
+    props: { atom },
+  }));
+}
+
+const { atom } = Astro.props;
+
+// Pick the type-specific payload
+const skillSpec = atom.skill_spec;
+const invocationContract = atom.invocation_contract;
+const trustBoundary = atom.trust_boundary;
+---
+<Base title={atom.name} description={atom.description ?? `${atom.type} atom`}>
+  <p><a href="/atoms/">← All atoms</a></p>
+  <h1>{atom.name}</h1>
+  <p style="color: var(--muted);">
+    <code>{atom.type}</code> · <code>v{atom.version}</code>
+  </p>
+
+  {atom.description && <p>{atom.description}</p>}
+
+  {atom.tags && atom.tags.length > 0 && (
+    <p>
+      Tags: {atom.tags.map((tag: string) => (
+        <span style="display: inline-block; font-size: 0.875rem; background: #f4ece4; padding: 0.125rem 0.5rem; border-radius: 0.25rem; margin-right: 0.25rem;">{tag}</span>
+      ))}
+    </p>
+  )}
+
+  {skillSpec && (
+    <section>
+      <h2>Skill specification</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        {skillSpec.trigger && (<><dt>Trigger</dt><dd><code>{skillSpec.trigger}</code></dd></>)}
+        {skillSpec.runtime && (<><dt>Runtime</dt><dd><code>{skillSpec.runtime}</code></dd></>)}
+        {skillSpec.prompt_ref && (<><dt>Prompt ref</dt><dd><code>{skillSpec.prompt_ref}</code></dd></>)}
+      </dl>
+    </section>
+  )}
+
+  {invocationContract && (
+    <section>
+      <h2>Invocation contract</h2>
+      {invocationContract.inputs && invocationContract.inputs.length > 0 && (
+        <>
+          <h3>Inputs</h3>
+          <ul>
+            {invocationContract.inputs.map((i: any) => (
+              <li><code>{i.name}</code> <em>({i.type}{i.required ? ", required" : ""})</em>{i.description ? ` — ${i.description}` : ""}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {invocationContract.outputs && invocationContract.outputs.length > 0 && (
+        <>
+          <h3>Outputs</h3>
+          <ul>
+            {invocationContract.outputs.map((o: any) => (
+              <li><code>{o.name}</code> <em>({o.type})</em>{o.description ? ` — ${o.description}` : ""}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {invocationContract.side_effects && invocationContract.side_effects.length > 0 && (
+        <>
+          <h3>Side effects</h3>
+          <p>{invocationContract.side_effects.map((s: string) => <code style="margin-right: 0.5rem;">{s}</code>)}</p>
+        </>
+      )}
+    </section>
+  )}
+
+  {trustBoundary && (
+    <section>
+      <h2>Trust boundary</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        {trustBoundary.elevation && (<><dt>Elevation</dt><dd><code>{trustBoundary.elevation}</code></dd></>)}
+        {trustBoundary.audit && (<><dt>Audit</dt><dd>{trustBoundary.audit ? "yes" : "no"}</dd></>)}
+        {trustBoundary.refusals && trustBoundary.refusals.length > 0 && (<><dt>Refusals</dt><dd><ul style="margin: 0; padding-left: 1rem;">{trustBoundary.refusals.map((r: string) => <li>{r}</li>)}</ul></dd></>)}
+      </dl>
+    </section>
+  )}
+
+  <h2>Raw atom</h2>
+  <p><a href={`/atoms/${atom.type}/${atom.id}.json`}>/atoms/{atom.type}/{atom.id}.json</a> · <a href="/schemas/atom-v1.json">schema</a></p>
+</Base>
