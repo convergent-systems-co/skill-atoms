@@ -1,0 +1,194 @@
+{
+  "catalog": "skill-atoms",
+  "version": "0.1.0",
+  "built_at": "2026-05-26T16:02:31+00:00",
+  "atoms": [
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/code-review",
+      "version": "1.0.0",
+      "name": "Code Review",
+      "description": "Review a code diff for correctness, security, and maintainability. Surfaces findings at HIGH / MEDIUM / LOW severity with file:line citations. Follows the grounding requirement from Code.md §11.5: every medium-or-higher finding includes evidence from the actual diff, not from inference.",
+      "system_prompt_fragment": "Review the diff for correctness, security, and maintainability. Surface HIGH/MEDIUM/LOW findings with file:line citations. For every MEDIUM or HIGH finding you MUST quote the specific line(s) from the diff that produce the finding — a finding without evidence must be withdrawn or downgraded to a question. Describe what is wrong, unsafe, unclear, or fragile and why. Do not describe what the code does (the diff shows that). Propose the smallest targeted fix that addresses the finding. After findings, run an adversarial self-pass: hidden assumptions, undocumented invariants, state-corruption paths, TOCTOU races, logical inconsistencies.",
+      "applicable_domains": [
+        "code",
+        "review"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "diff",
+            "type": "string",
+            "description": "Unified diff or PR diff to review.",
+            "required": true
+          },
+          {
+            "name": "context",
+            "type": "string",
+            "description": "Optional background — PR description, linked issue, relevant architectural context.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "findings",
+            "type": "array",
+            "description": "List of severity-tagged findings with file:line citations.",
+            "required": true
+          },
+          {
+            "name": "adversarial_pass",
+            "type": "string",
+            "description": "Summary of the adversarial self-pass results.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "review",
+        "security",
+        "maintainability",
+        "diff"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/debug-systematically",
+      "version": "1.0.0",
+      "name": "Debug Systematically",
+      "description": "Five-phase systematic debugging: reproduce → isolate → root-cause → fix-with-regression-test → verify. Follows Code.md §11.4. Never proposes a fix before root cause is confirmed. Fixes address the root cause, not the surface symptom. Every fix begins with a failing test that reproduces the bug.",
+      "system_prompt_fragment": "Debug using the five-phase protocol. Do not skip or reorder phases.\n\n1. REPRODUCE — establish a reliable reproduction. If you cannot reproduce, the bug report is the work product; do not guess. Name the exact steps, inputs, and observed versus expected output.\n2. ISOLATE — narrow the failure to the smallest possible surface. Strip away unrelated code, config, and environment variables until the bug is isolated.\n3. ROOT CAUSE — name the root cause explicitly. The fix must address this, not the surface symptom. A symptom-fix is a defect dressed as a fix.\n4. FIX WITH REGRESSION TEST — write a failing test that reproduces the bug first. Then write the minimal fix. The fix is the smallest change that addresses the root cause.\n5. VERIFY — run the test suite. Cite the test-runner output. Claim 'fixed' only after citing the run. After fixing, ask: 'Why was this not caught?' Name the gap — missing coverage, missing validation, missing type safety, missing observability — and either address it or file a follow-up.\n\nApply the 3-cycle local cap: after three failed attempts using the same approach, stop, name what is not working, propose an alternative, and ask before continuing.",
+      "applicable_domains": [
+        "code",
+        "debug"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "bug_report",
+            "type": "string",
+            "description": "Description of the observed failure, error message, or unexpected behavior.",
+            "required": true
+          },
+          {
+            "name": "reproduction_steps",
+            "type": "string",
+            "description": "Known steps to trigger the bug, if available.",
+            "required": false
+          },
+          {
+            "name": "codebase_context",
+            "type": "string",
+            "description": "Relevant code snippets, file paths, or architectural context.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "reproduction",
+            "type": "string",
+            "description": "Confirmed reproduction case.",
+            "required": true
+          },
+          {
+            "name": "root_cause",
+            "type": "string",
+            "description": "Named root cause with evidence.",
+            "required": true
+          },
+          {
+            "name": "fix",
+            "type": "string",
+            "description": "Minimal fix addressing the root cause.",
+            "required": true
+          },
+          {
+            "name": "regression_test",
+            "type": "string",
+            "description": "Test that would have caught this bug.",
+            "required": true
+          },
+          {
+            "name": "gap_analysis",
+            "type": "string",
+            "description": "Why this was not caught and what closes the gap.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write files (regression test and fix)"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "debug",
+        "tdd",
+        "root-cause",
+        "regression"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/write-conventional-commit",
+      "version": "1.0.0",
+      "name": "Write Conventional Commit",
+      "description": "Produce a Conventional Commits message from a staged diff or change description. Enforces Code.md §11.2: correct type prefix, 72-char subject line, imperative mood, body explaining why not what, one logical change per commit.",
+      "system_prompt_fragment": "Write a Conventional Commits message from the provided diff or change description.\n\nRules:\n- Subject line: <type>(<optional-scope>): <imperative-mood description> — max 72 characters, no trailing period.\n- Type prefix is mandatory. Choose the most specific match: feat (new capability), fix (bug fix), refactor (behavior-preserving restructure), perf (performance improvement without behavior change), docs (documentation only), test (test-only changes), build (build system or tooling), ci (CI/CD config), chore (housekeeping — deps, config, non-code).\n- Imperative mood: 'add', not 'added'; 'fix', not 'fixed'; 'remove', not 'removed'.\n- Body (optional but preferred on non-trivial changes): explains WHY this change was made, not what the diff shows. Wrap at 72 characters. Separate from subject with a blank line.\n- One logical change per commit. If the diff contains multiple logical changes, surface them as separate commit messages and explain why they should be split.\n- Co-Authored-By trailer: include when AI generated or co-authored the change.\n- Do NOT include a 'BREAKING CHANGE' footer unless the diff actually breaks a public API or contract — name the break explicitly if so.",
+      "applicable_domains": [
+        "code",
+        "commit",
+        "git"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "diff_or_description",
+            "type": "string",
+            "description": "Staged diff (git diff --cached output) or a prose description of the change.",
+            "required": true
+          },
+          {
+            "name": "scope",
+            "type": "string",
+            "description": "Optional scope hint, e.g. the module or package name.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "commit_message",
+            "type": "string",
+            "description": "Full Conventional Commits message ready to pass to git commit -m.",
+            "required": true
+          },
+          {
+            "name": "split_suggestion",
+            "type": "string",
+            "description": "If the diff contains multiple logical changes, suggested split into separate commits.",
+            "required": false
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "commit",
+        "conventional-commits",
+        "code-style"
+      ],
+      "lifecycle": "stable"
+    }
+  ],
+  "compositions": [],
+  "rules": []
+}
