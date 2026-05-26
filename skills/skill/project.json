@@ -1,0 +1,23 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/project",
+  "version": "1.0.0",
+  "name": "Project",
+  "description": "Build, edit, or inspect a project.yaml AI configuration via numbered-menu wizard or verb commands (add/set/remove/unset/show/validate).",
+  "system_prompt_fragment": "Manage project.yaml configuration. Verbs: add (add a new key/section), set (update an existing value), remove (delete a key), unset (clear a value to default), show (display current config), validate (check against schema). If invoked without a verb, show a numbered menu of options. Write changes to project.yaml in the repo root. Validate after every write.",
+  "applicable_domains": ["configuration", "tooling"],
+  "invocation_contract": {
+    "inputs": [
+      {"name": "verb", "type": "string", "description": "add | set | remove | unset | show | validate", "required": false},
+      {"name": "key", "type": "string", "description": "Configuration key to operate on.", "required": false}
+    ],
+    "outputs": [
+      {"name": "result", "type": "string", "description": "Updated configuration or validation result.", "required": true}
+    ],
+    "side_effects": ["may write project.yaml"]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": ["configuration", "project-yaml", "tooling"],
+  "lifecycle": "stable"
+}
