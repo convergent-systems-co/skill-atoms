@@ -47,10 +47,5 @@
     "scaffold",
     "cross-catalog"
   ],
-  "lifecycle": "stable",
-  "see_also": [
-    "skill/commit",
-    "skill/checkpoint",
-    "skill/make-work"
-  ]
+  "lifecycle": "stable"
 }
