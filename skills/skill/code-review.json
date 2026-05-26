@@ -1,0 +1,24 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/code-review",
+  "version": "1.0.0",
+  "name": "Code Review",
+  "description": "Review a code diff for correctness, security, and maintainability. Surfaces findings at HIGH / MEDIUM / LOW severity with file:line citations. Follows the grounding requirement from Code.md §11.5: every medium-or-higher finding includes evidence from the actual diff, not from inference.",
+  "system_prompt_fragment": "Review the diff for correctness, security, and maintainability. Surface HIGH/MEDIUM/LOW findings with file:line citations. For every MEDIUM or HIGH finding you MUST quote the specific line(s) from the diff that produce the finding — a finding without evidence must be withdrawn or downgraded to a question. Describe what is wrong, unsafe, unclear, or fragile and why. Do not describe what the code does (the diff shows that). Propose the smallest targeted fix that addresses the finding. After findings, run an adversarial self-pass: hidden assumptions, undocumented invariants, state-corruption paths, TOCTOU races, logical inconsistencies.",
+  "applicable_domains": ["code", "review"],
+  "invocation_contract": {
+    "inputs": [
+      { "name": "diff", "type": "string", "description": "Unified diff or PR diff to review.", "required": true },
+      { "name": "context", "type": "string", "description": "Optional background — PR description, linked issue, relevant architectural context.", "required": false }
+    ],
+    "outputs": [
+      { "name": "findings", "type": "array", "description": "List of severity-tagged findings with file:line citations.", "required": true },
+      { "name": "adversarial_pass", "type": "string", "description": "Summary of the adversarial self-pass results.", "required": true }
+    ],
+    "side_effects": []
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": ["code", "review", "security", "maintainability", "diff"],
+  "lifecycle": "stable"
+}

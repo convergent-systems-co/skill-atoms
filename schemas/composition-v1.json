@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-atoms.com/schemas/composition-v1.json",
+  "title": "skill-atoms v1 skill-set composition",
+  "description": "A skill-set composition groups related skill atoms into a named, co-loadable bundle. The Olympus broker loads all referenced skills together when the skill-set is activated.",
+  "type": "object",
+  "required": [
+    "schema",
+    "canonical_name",
+    "version",
+    "description",
+    "skills"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "https://skill-atoms.com/schemas/composition-v1.json"
+    },
+    "canonical_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*(?:/[a-z0-9-]+)*/skill-sets/[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+      "description": "Fully-qualified name in <namespace>/skill-sets/<slug> form."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "skills": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["ref", "version"],
+        "additionalProperties": false,
+        "properties": {
+          "ref":     { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$" }
+        }
+      },
+      "description": "Ordered list of skill atom refs to load together."
+    },
+    "authored_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["draft", "stable", "deprecated", "retired"],
+      "default": "draft"
+    }
+  }
+}
