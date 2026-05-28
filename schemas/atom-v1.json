@@ -22,8 +22,12 @@
     },
     "type": {
       "type": "string",
-      "enum": ["skill", "skill-set", "invocation-contract"],
-      "description": "skill — a single bounded capability; skill-set — a named group of related skills loaded together; invocation-contract — a schema describing how a skill may be called (inputs, outputs, side-effects)."
+      "enum": [
+        "skill",
+        "skill-set",
+        "invocation-contract"
+      ],
+      "description": "skill \u2014 a single bounded capability; skill-set \u2014 a named group of related skills loaded together; invocation-contract \u2014 a schema describing how a skill may be called (inputs, outputs, side-effects)."
     },
     "id": {
       "type": "string",
@@ -50,7 +54,7 @@
     "system_prompt_fragment": {
       "type": "string",
       "minLength": 1,
-      "description": "The instruction text injected into the agent's system prompt when this skill is loaded. Write in second person imperative. Must be self-contained — do not reference other atoms by assumption."
+      "description": "The instruction text injected into the agent's system prompt when this skill is loaded. Write in second person imperative. Must be self-contained \u2014 do not reference other atoms by assumption."
     },
     "applicable_domains": {
       "type": "array",
@@ -74,38 +78,64 @@
     "signed_by": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "description": "Additional endorsement signatures."
     },
     "tags": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "description": "Free-form discovery tags beyond applicable_domains."
     },
     "lifecycle": {
       "type": "string",
-      "enum": ["draft", "stable", "deprecated", "retired"],
+      "enum": [
+        "draft",
+        "stable",
+        "deprecated",
+        "retired"
+      ],
       "default": "draft"
     },
     "superseded_by": {
       "type": "string",
       "description": "ID of the skill that replaces this one when lifecycle is deprecated or retired."
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Slugs of skills this skill depends on. Installing this skill also installs all listed dependencies.",
+      "uniqueItems": true
     }
   },
   "$defs": {
     "invocationContract": {
       "type": "object",
-      "required": ["inputs", "outputs"],
+      "required": [
+        "inputs",
+        "outputs"
+      ],
       "additionalProperties": false,
       "properties": {
         "inputs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/contractField" }
+          "items": {
+            "$ref": "#/$defs/contractField"
+          }
         },
         "outputs": {
           "type": "array",
-          "items": { "$ref": "#/$defs/contractField" }
+          "items": {
+            "$ref": "#/$defs/contractField"
+          }
         },
         "side_effects": {
           "type": "array",
@@ -119,13 +149,27 @@
     },
     "contractField": {
       "type": "object",
-      "required": ["name", "type"],
+      "required": [
+        "name",
+        "type"
+      ],
       "additionalProperties": false,
       "properties": {
-        "name":        { "type": "string", "minLength": 1 },
-        "type":        { "type": "string", "minLength": 1 },
-        "description": { "type": "string" },
-        "required":    { "type": "boolean", "default": true }
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean",
+          "default": true
+        }
       }
     }
   }
