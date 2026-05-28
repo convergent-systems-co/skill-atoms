@@ -1,0 +1,35 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-sync",
+  "version": "1.0.0",
+  "name": "Make Sync",
+  "description": "Pull all repos in the workspace (primary + submodules) to their default branch heads.",
+  "system_prompt_fragment": "Sync all repos in the current workspace to their remote default branch: (1) discover primary repo and all git submodules; (2) for each repo, fetch --prune, then pull the default branch (main/master) with fast-forward only; (3) report any repos where fast-forward failed (diverged) without force-pulling; (4) update submodule pointers in the parent if they changed. Never rebase, never force-pull, never modify non-default branches.",
+  "applicable_domains": [
+    "git",
+    "workflow"
+  ],
+  "invocation_contract": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "sync_summary",
+        "type": "string",
+        "description": "List of repos synced and any that diverged.",
+        "required": true
+      }
+    ],
+    "side_effects": [
+      "updates local default branch",
+      "may update submodule pointers"
+    ]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": [
+    "git",
+    "sync",
+    "workflow"
+  ],
+  "lifecycle": "stable"
+}
