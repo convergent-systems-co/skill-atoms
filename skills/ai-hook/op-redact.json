@@ -1,0 +1,15 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "ai-hook",
+  "id": "ai-hook/op-redact",
+  "version": "1.0.0",
+  "name": "OP Redact",
+  "description": "Redact 1Password secret values from tool output before they appear in the conversation.",
+  "events": ["PostToolUse"],
+  "lang": "python",
+  "install_path": "~/.ai/hooks/op-redact.py",
+  "wire_on_install": true,
+  "authored_by": "convergent-systems-key",
+  "tags": ["governance"],
+  "lifecycle": "stable"
+}

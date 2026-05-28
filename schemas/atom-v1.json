@@ -10,11 +10,19 @@
     "id",
     "version",
     "name",
-    "description",
-    "system_prompt_fragment",
-    "applicable_domains"
+    "description"
   ],
   "additionalProperties": false,
+  "if": {
+    "properties": { "type": { "const": "ai-hook" } },
+    "required": ["type"]
+  },
+  "then": {
+    "required": ["schema", "type", "id", "version", "name", "description", "events", "lang", "install_path", "wire_on_install"]
+  },
+  "else": {
+    "required": ["schema", "type", "id", "version", "name", "description", "system_prompt_fragment", "applicable_domains"]
+  },
   "properties": {
     "schema": {
       "type": "string",
@@ -25,9 +33,10 @@
       "enum": [
         "skill",
         "skill-set",
-        "invocation-contract"
+        "invocation-contract",
+        "ai-hook"
       ],
-      "description": "skill \u2014 a single bounded capability; skill-set \u2014 a named group of related skills loaded together; invocation-contract \u2014 a schema describing how a skill may be called (inputs, outputs, side-effects)."
+      "description": "skill — a single bounded capability; skill-set — a named group of related skills loaded together; invocation-contract — a schema describing how a skill may be called (inputs, outputs, side-effects); ai-hook — a governance hook script (Python or shell) that fires on Claude Code or git events."
     },
     "id": {
       "type": "string",
@@ -54,7 +63,7 @@
     "system_prompt_fragment": {
       "type": "string",
       "minLength": 1,
-      "description": "The instruction text injected into the agent's system prompt when this skill is loaded. Write in second person imperative. Must be self-contained \u2014 do not reference other atoms by assumption."
+      "description": "The instruction text injected into the agent's system prompt when this skill is loaded. Write in second person imperative. Must be self-contained — do not reference other atoms by assumption."
     },
     "applicable_domains": {
       "type": "array",
@@ -114,6 +123,29 @@
       },
       "description": "Slugs of skills this skill depends on. Installing this skill also installs all listed dependencies.",
       "uniqueItems": true
+    },
+    "events": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Claude Code or git hook events this hook fires on (e.g. PreToolUse, PostToolUse, SessionStart, SessionEnd, Stop, SubagentStop, UserPromptSubmit). Empty array for data files or git hooks."
+    },
+    "lang": {
+      "type": "string",
+      "enum": ["python", "shell", "data"],
+      "description": "Implementation language of the hook script. Use 'data' for JSON pattern libraries or other non-executable artifacts."
+    },
+    "install_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Destination path for the hook script on install, relative to the user's home directory (e.g. ~/.ai/hooks/audit.py)."
+    },
+    "wire_on_install": {
+      "type": "boolean",
+      "description": "When true, the installer wires this hook into the Claude Code settings.json hooks block automatically."
     }
   },
   "$defs": {
