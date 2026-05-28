@@ -1,4 +1,19 @@
 ---
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+// process.cwd() is the Astro project root (web/) during both dev and build.
+// The skills directory is one level up at <repo-root>/skills/skill/.
+const skillsDir = join(process.cwd(), '../skills/skill');
+const skills = readdirSync(skillsDir)
+  .filter(f => f.endsWith('.json'))
+  .map(f => {
+    const data = JSON.parse(readFileSync(join(skillsDir, f), 'utf8'));
+    return { slug: f.replace('.json', ''), ...data };
+  })
+  .filter(s => s.lifecycle !== 'deprecated' && s.lifecycle !== 'retired')
+  .sort((a, b) => a.slug.localeCompare(b.slug));
+
 const title = "SKILL-Atoms";
 const tagline = "Catalog of AI skills — convergent-systems.co atoms ecosystem.";
 ---
@@ -18,6 +33,20 @@ const tagline = "Catalog of AI skills — convergent-systems.co atoms ecosystem.
       body { min-height: 100vh; }
       .hero-mark { width: 160px; height: 160px; margin-bottom: 20px; object-fit: contain; }
       .sidenav-wordmark { width: 140px; object-fit: contain; display: block; }
+      .skill-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+      .skill-table th,
+      .skill-table td { text-align: left; padding: 0.5rem 0.75rem; vertical-align: top; }
+      .skill-table thead tr { border-bottom: 2px solid var(--color-border, #e5e7eb); }
+      .skill-table tbody tr { border-bottom: 1px solid var(--color-border, #e5e7eb); }
+      .skill-table tbody tr:last-child { border-bottom: none; }
+      .skill-slug { font-family: monospace; font-size: 0.875rem; white-space: nowrap; }
+      .skill-version { font-family: monospace; font-size: 0.8rem; color: var(--color-muted, #6b7280); white-space: nowrap; }
+      .skill-name { font-weight: 600; }
+      .skill-description { font-size: 0.875rem; color: var(--color-muted, #374151); }
+      .sidenav-skills { margin-top: 1.25rem; }
+      .sidenav-skills-heading { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted, #9ca3af); padding: 0 0.25rem 0.4rem; }
+      .sidenav-skill-link { display: block; font-family: monospace; font-size: 0.78rem; padding: 0.2rem 0.25rem; color: var(--color-link, inherit); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sidenav-skill-link:hover { text-decoration: underline; }
     </style>
   </head>
   <body>
@@ -28,10 +57,28 @@ const tagline = "Catalog of AI skills — convergent-systems.co atoms ecosystem.
           <h1>{title}</h1>
           <p class="lede">{tagline}</p>
         </section>
-        <div class="status">
-          <p><strong>Status:</strong> bootstrap. Catalog is empty pending the canonical <code>skill</code> schema in <a href="https://github.com/convergent-systems-co/schema-atoms">schema-atoms</a>.</p>
-          <p>Source: <a href="https://github.com/convergent-systems-co/skill-atoms">github.com/convergent-systems-co/skill-atoms</a></p>
-        </div>
+
+        <table class="skill-table">
+          <thead>
+            <tr>
+              <th>Slug</th>
+              <th>Name</th>
+              <th>Version</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {skills.map(skill => (
+              <tr id={skill.slug}>
+                <td class="skill-slug">{skill.slug}</td>
+                <td class="skill-name">{skill.name}</td>
+                <td class="skill-version">{skill.version}</td>
+                <td class="skill-description">{skill.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
         <footer>
           Part of the <a href="https://github.com/convergent-systems-co/atoms">atoms ecosystem</a>. Apache-2.0.
         </footer>
@@ -40,6 +87,12 @@ const tagline = "Catalog of AI skills — convergent-systems.co atoms ecosystem.
         <a class="brand" href="/">
           <img src="https://brand-atoms.com/dist/brands/atom-family/1.0.0/assets/atom-family-wordmark.png" alt="ATOMS" class="sidenav-wordmark" />
         </a>
+        <div class="sidenav-skills">
+          <div class="sidenav-skills-heading">Skills ({skills.length})</div>
+          {skills.map(skill => (
+            <a class="sidenav-skill-link" href={`#${skill.slug}`}>{skill.slug}</a>
+          ))}
+        </div>
         <div class="aside-meta">
           <a class="meta-link" href="https://github.com/convergent-systems-co/skill-atoms">github ↗</a>
         </div>

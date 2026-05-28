@@ -1,0 +1,23 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make",
+  "version": "1.0.0",
+  "name": "Make",
+  "description": "Unified make dispatcher. Delegates to the correct sub-skill (work/clean/build/test) based on the subcommand argument.",
+  "system_prompt_fragment": "Dispatch to the correct sub-skill: /make work → PM mode + multi-agent delivery team. /make clean → purge merged branches, aggregate in-flight, hand off to build. /make build → commit, push, open PR, merge. /make test → discover and run test suite. Read the subcommand and immediately invoke the matching sub-skill. Do not summarize or ask clarifying questions.",
+  "applicable_domains": ["workflow", "git", "testing"],
+  "invocation_contract": {
+    "inputs": [
+      {"name": "subcommand", "type": "string", "description": "work | sprint | clean | build | test | status | sync | review | doctor | atoms", "required": true}
+    ],
+    "outputs": [
+      {"name": "result", "type": "string", "description": "Output of the invoked sub-skill.", "required": true}
+    ],
+    "side_effects": ["delegates to sub-skills — see their side effects"]
+  },
+  "depends_on": ["make-work", "make-clean", "make-test", "make-build", "make-status", "make-sync", "make-review", "make-doctor", "make-atoms"],
+  "authored_by": "convergent-systems-key",
+  "tags": ["workflow", "dispatcher", "make"],
+  "lifecycle": "stable"
+}
