@@ -1,0 +1,15 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "ai-hook",
+  "id": "ai-hook/destructive-terraform-guard",
+  "version": "1.0.0",
+  "name": "Destructive Terraform Guard",
+  "description": "Block destructive terraform operations (destroy, force-replace) without confirmation.",
+  "events": ["PreToolUse"],
+  "lang": "python",
+  "install_path": "~/.ai/hooks/destructive-terraform-guard.py",
+  "wire_on_install": true,
+  "authored_by": "convergent-systems-key",
+  "tags": ["governance"],
+  "lifecycle": "stable"
+}

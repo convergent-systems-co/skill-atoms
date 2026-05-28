@@ -1,0 +1,15 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "ai-hook",
+  "id": "ai-hook/branch-guard",
+  "version": "1.0.0",
+  "name": "Branch Guard",
+  "description": "Block direct commits, pushes, and merges to protected branches (main, master).",
+  "events": ["PreToolUse"],
+  "lang": "python",
+  "install_path": "~/.ai/hooks/branch-guard.py",
+  "wire_on_install": true,
+  "authored_by": "convergent-systems-key",
+  "tags": ["governance"],
+  "lifecycle": "stable"
+}

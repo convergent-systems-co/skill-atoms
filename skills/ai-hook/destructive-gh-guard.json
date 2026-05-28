@@ -1,0 +1,15 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "ai-hook",
+  "id": "ai-hook/destructive-gh-guard",
+  "version": "1.0.0",
+  "name": "Destructive GH Guard",
+  "description": "Block destructive gh CLI operations (repo delete, branch force-push, etc.).",
+  "events": ["PreToolUse"],
+  "lang": "python",
+  "install_path": "~/.ai/hooks/destructive-gh-guard.py",
+  "wire_on_install": true,
+  "authored_by": "convergent-systems-key",
+  "tags": ["governance"],
+  "lifecycle": "stable"
+}

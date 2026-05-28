@@ -1,0 +1,15 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "ai-hook",
+  "id": "ai-hook/no-verify-strip",
+  "version": "1.0.0",
+  "name": "No Verify Strip",
+  "description": "Strip --no-verify flags from git commands to enforce pre-commit hook execution.",
+  "events": ["PreToolUse"],
+  "lang": "python",
+  "install_path": "~/.ai/hooks/no-verify-strip.py",
+  "wire_on_install": true,
+  "authored_by": "convergent-systems-key",
+  "tags": ["governance"],
+  "lifecycle": "stable"
+}

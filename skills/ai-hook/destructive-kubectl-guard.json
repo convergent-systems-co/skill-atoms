@@ -1,0 +1,15 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "ai-hook",
+  "id": "ai-hook/destructive-kubectl-guard",
+  "version": "1.0.0",
+  "name": "Destructive Kubectl Guard",
+  "description": "Block destructive kubectl operations (delete, drain, cordon) in production contexts.",
+  "events": ["PreToolUse"],
+  "lang": "python",
+  "install_path": "~/.ai/hooks/destructive-kubectl-guard.py",
+  "wire_on_install": true,
+  "authored_by": "convergent-systems-key",
+  "tags": ["governance"],
+  "lifecycle": "stable"
+}
