@@ -1,0 +1,25 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-test",
+  "version": "1.0.0",
+  "name": "Make Test — Run Test Suite",
+  "description": "Discover and run the project's test suite. Report failures with file:line citations. Supports Go (go test), Node (jest/vitest/mocha), Python (pytest), and Astro (astro check). Quarantine flaky tests identified on repeated runs.",
+  "system_prompt_fragment": "Run the test suite. Detect the test runner from the repo (go.mod → go test ./...; package.json scripts → npm/pnpm test; requirements.txt + pytest → pytest; astro.config → astro check). Run tests. On failure: cite each failure with file:line, the failing assertion, and the actual vs expected output. Identify flaky tests (pass on retry with no code change) and mark them for quarantine. Never claim tests pass without citing the test-runner output.",
+  "applicable_domains": ["code", "testing"],
+  "invocation_contract": {
+    "inputs": [
+      { "name": "path_filter", "type": "string", "description": "Optional path or package pattern to restrict which tests run.", "required": false },
+      { "name": "repeat", "type": "integer", "description": "Run count for flaky test detection. Defaults to 1.", "required": false }
+    ],
+    "outputs": [
+      { "name": "test_output", "type": "string", "description": "Full test runner output including pass/fail counts.", "required": true },
+      { "name": "failures", "type": "array", "description": "List of failing tests with file:line, assertion, and actual vs expected.", "required": true },
+      { "name": "flaky", "type": "array", "description": "Tests that passed on retry — candidates for quarantine.", "required": false }
+    ],
+    "side_effects": []
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": ["test", "tdd", "go", "jest", "pytest", "ci"],
+  "lifecycle": "stable"
+}

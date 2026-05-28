@@ -1,0 +1,25 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/frontend-design",
+  "version": "1.0.0",
+  "name": "Frontend Design",
+  "description": "Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use when building web components, pages, or applications.",
+  "system_prompt_fragment": "Build frontend interfaces with high design quality. Avoid generic AI aesthetics: no bootstrap-default grey cards, no generic hero sections, no empty state illustrations with clouds. Instead: use deliberate color, real typography scale, meaningful whitespace, purposeful motion. Consider the information hierarchy first — what does the user need to see in what order? Then design backwards from that. Use semantic HTML. Meet WCAG 2.1 AA minimum. Test keyboard navigation. No magic numbers — all spacing, color, and type from a declared design system or tokens.",
+  "applicable_domains": ["frontend", "design", "ui"],
+  "invocation_contract": {
+    "inputs": [
+      { "name": "component_description", "type": "string", "description": "What the component or page should do and who uses it.", "required": true },
+      { "name": "design_system", "type": "string", "description": "Existing design tokens, Tailwind config, or component library to build on.", "required": false },
+      { "name": "framework", "type": "string", "description": "Target framework: React, Astro, Vue, Svelte, plain HTML. Defaults to inferred from repo.", "required": false }
+    ],
+    "outputs": [
+      { "name": "component_code", "type": "string", "description": "Production-ready component code.", "required": true },
+      { "name": "design_notes", "type": "string", "description": "Rationale for key design decisions.", "required": false }
+    ],
+    "side_effects": ["writes component files"]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": ["frontend", "ui", "design", "css", "html", "react", "astro"],
+  "lifecycle": "stable"
+}
