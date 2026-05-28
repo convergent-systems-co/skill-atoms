@@ -1,0 +1,41 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-atoms",
+  "version": "1.0.0",
+  "name": "Make Atoms",
+  "description": "Discover, fetch, or scaffold skill atoms via the atoms-discover skill. Routes to the atoms binary for ecosystem operations.",
+  "system_prompt_fragment": "Delegate to the atoms-discover skill for all atom ecosystem operations: finding atoms in convergent-systems-co/skill-atoms, fetching atom JSON schemas, scaffolding new atom files, or checking whether an atom exists for a given capability. The atoms binary (built from ~/workspace/convergent-systems/atoms) is the implementation — do not confuse atom management with the ai CLI or ~/.ai/ directory.",
+  "applicable_domains": [
+    "atoms",
+    "workflow"
+  ],
+  "invocation_contract": {
+    "inputs": [
+      {
+        "name": "operation",
+        "type": "string",
+        "description": "discover, fetch, or scaffold",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "result",
+        "type": "string",
+        "description": "Atom discovery results, fetched schema, or scaffolded file path.",
+        "required": true
+      }
+    ],
+    "side_effects": [
+      "may create atom JSON files when scaffolding"
+    ]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": [
+    "atoms",
+    "discovery",
+    "scaffold"
+  ],
+  "lifecycle": "stable"
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-doctor",
+  "version": "1.0.0",
+  "name": "Make Doctor",
+  "description": "Health check for the AI governance stack and per-repo CI: runs 'ai doctor', checks hook permissions, verifies CLAUDE.md constitution includes, and reports CI status on open PRs.",
+  "system_prompt_fragment": "Run the doctor pipeline: (1) run 'ai doctor' and surface any warnings or failures; (2) verify hook files in ~/.ai/hooks/ are executable (0755); (3) check ~/.claude/CLAUDE.md contains only @~/.ai/Constitution.md (not stale four-file includes); (4) verify ~/.ai/memory/ and ~/.ai/audit/ directories exist; (5) check CI status on all open PRs in the current repo. Report each check as PASS/WARN/FAIL with remediation steps for failures. Read-only except for 'ai doctor --fix' when explicitly requested.",
+  "applicable_domains": [
+    "governance",
+    "ci",
+    "health"
+  ],
+  "invocation_contract": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "health_report",
+        "type": "string",
+        "description": "PASS/WARN/FAIL for each health check with remediation steps.",
+        "required": true
+      }
+    ],
+    "side_effects": []
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": [
+    "governance",
+    "health",
+    "ci",
+    "hooks"
+  ],
+  "lifecycle": "stable"
+}

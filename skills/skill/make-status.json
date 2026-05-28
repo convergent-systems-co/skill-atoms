@@ -1,0 +1,33 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-status",
+  "version": "1.0.0",
+  "name": "Make Status",
+  "description": "Sprint status snapshot: open PRs and their CI state, stale branches, sync gap between local and origin, and any uncommitted work.",
+  "system_prompt_fragment": "Report sprint status across the repo set: (1) list all open PRs with CI status (green/red/pending) and draft state; (2) list local branches ahead of main with commit counts; (3) show the sync gap (commits on origin/main not yet in local main); (4) show uncommitted changes and stale worktrees. Format as a status board with Done / In-flight / Blocked / Next-up sections. Do not modify any files.",
+  "applicable_domains": [
+    "git",
+    "workflow"
+  ],
+  "invocation_contract": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "status_report",
+        "type": "string",
+        "description": "Sprint status board: PRs, branches, sync gap, uncommitted work.",
+        "required": true
+      }
+    ],
+    "side_effects": []
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": [
+    "git",
+    "status",
+    "sprint",
+    "workflow"
+  ],
+  "lifecycle": "stable"
+}

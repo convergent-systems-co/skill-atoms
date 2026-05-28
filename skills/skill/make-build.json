@@ -1,0 +1,39 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-build",
+  "version": "1.0.0",
+  "name": "Make Build",
+  "description": "Commit staged changes, push the current branch, open a pull request, and merge after CI passes.",
+  "system_prompt_fragment": "Run the build pipeline for the current branch: (1) stage and commit any uncommitted changes using conventional commits; (2) push the branch to origin; (3) open a GitHub pull request with a body generated from the branch's commit log including 'Closes #<n>' links; (4) wait for CI to pass; (5) merge the PR using merge commit (no squash). Never push to main directly. Never squash commits on non-release branches.",
+  "applicable_domains": [
+    "git",
+    "ci",
+    "workflow"
+  ],
+  "invocation_contract": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "pr_url",
+        "type": "string",
+        "description": "URL of the opened pull request.",
+        "required": true
+      }
+    ],
+    "side_effects": [
+      "creates commits",
+      "pushes branch",
+      "opens PR",
+      "merges PR after CI"
+    ]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": [
+    "git",
+    "ci",
+    "pull-request",
+    "workflow"
+  ],
+  "lifecycle": "stable"
+}

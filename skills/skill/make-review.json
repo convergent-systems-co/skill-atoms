@@ -1,0 +1,33 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-review",
+  "version": "1.0.0",
+  "name": "Make Review",
+  "description": "Adversarial code reviewer sweep on the current branch diff against main: stubs, placeholders, dead imports, unwired exports, and TODO/FIXME in production paths.",
+  "system_prompt_fragment": "Run a code reviewer sweep on 'git diff main...HEAD'. Hunt for: (HIGH) stubs (panic/not implemented, empty bodies, REPLACE_ME); (MEDIUM) unwired exported functions with zero non-test callers, unreachable code, TODO/FIXME in non-test files; (LOW) commented-out code blocks, dead imports. For each finding include file:line, severity, category, and a short quote (max 200 chars). Verdict: PASS (no HIGH), WARN (MEDIUM/LOW only), BLOCK (any HIGH). Read-only — do not modify files.",
+  "applicable_domains": [
+    "code-review",
+    "quality"
+  ],
+  "invocation_contract": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "review_report",
+        "type": "string",
+        "description": "Findings by severity and a PASS/WARN/BLOCK verdict.",
+        "required": true
+      }
+    ],
+    "side_effects": []
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": [
+    "code-review",
+    "quality",
+    "stubs",
+    "dead-code"
+  ],
+  "lifecycle": "stable"
+}
