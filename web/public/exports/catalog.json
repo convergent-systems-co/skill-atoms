@@ -1,7 +1,7 @@
 {
   "catalog": "skill-atoms",
   "version": "0.1.0",
-  "built_at": "2026-05-30T20:20:15+00:00",
+  "built_at": "2026-05-30T21:00:35+00:00",
   "atoms": [
     {
       "schema": "https://skill-atoms.com/schemas/atom-v1.json",
@@ -525,6 +525,59 @@
     {
       "schema": "https://skill-atoms.com/schemas/atom-v1.json",
       "type": "skill",
+      "id": "skill/make-sprint",
+      "version": "1.0.0",
+      "name": "Make Sprint",
+      "description": "Full delivery cycle: recover from checkpoint, ingest the issue queue, partition by domain, spawn Tech Lead agents per batch, run TDD Writer → Coder → Adversarial Tester → PR → merge pipeline for each issue. Use when starting a sprint, resuming in-flight work, or executing a multi-issue delivery run.",
+      "system_prompt_fragment": "Execute the make-sprint delivery pipeline. Phase 0: check for checkpoint, scan stale worktrees and open PRs. Phase 1: pre-flight (no mid-merge state, gh authenticated). Phase 2: build repo set (primary + submodules). Phase 3: ingest issue queue from GitHub Projects, Issues, project.yaml, ISSUES.md, GOALS.md — assign only at Task level. Phase 4: partition into domain batches, spawn one Tech Lead per batch. Each TL runs: worktree → plan → TDD Writer → Coder → Adversarial Tester → PR → merge. Phase 5: Code Reviewer sweep after queue is empty. Phase 6: /make build.",
+      "applicable_domains": [
+        "code",
+        "project",
+        "delivery"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "issue_filter",
+            "type": "string",
+            "description": "Optional label, milestone, or assignee filter for the issue queue.",
+            "required": false
+          },
+          {
+            "name": "batch_size",
+            "type": "integer",
+            "description": "Maximum issues per Tech Lead batch. Defaults to 5.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "delivery_report",
+            "type": "string",
+            "description": "Summary of issues processed, PRs opened, and failures.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates git worktrees",
+          "writes files",
+          "opens PRs on GitHub",
+          "merges branches"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "sprint",
+        "delivery",
+        "tdd",
+        "agents",
+        "pm"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
       "id": "skill/make-test",
       "version": "1.0.0",
       "name": "Make Test — Run Test Suite",
@@ -579,59 +632,6 @@
         "jest",
         "pytest",
         "ci"
-      ],
-      "lifecycle": "stable"
-    },
-    {
-      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
-      "type": "skill",
-      "id": "skill/make-work",
-      "version": "1.0.0",
-      "name": "Make Work — Sprint Delivery",
-      "description": "Full delivery cycle: recover from checkpoint, ingest the issue queue, partition by domain, spawn Tech Lead agents per batch, run TDD Writer → Coder → Adversarial Tester → PR → merge pipeline for each issue. Use when starting a sprint, resuming in-flight work, or executing a multi-issue delivery run.",
-      "system_prompt_fragment": "Execute the make-work delivery pipeline. Phase 0: check for checkpoint, scan stale worktrees and open PRs. Phase 1: pre-flight (no mid-merge state, gh authenticated). Phase 2: build repo set (primary + submodules). Phase 3: ingest issue queue from GitHub Projects, Issues, project.yaml, ISSUES.md, GOALS.md — assign only at Task level. Phase 4: partition into domain batches, spawn one Tech Lead per batch. Each TL runs: worktree → plan → TDD Writer → Coder → Adversarial Tester → PR → merge. Phase 5: Code Reviewer sweep after queue is empty. Phase 6: /make build.",
-      "applicable_domains": [
-        "code",
-        "project",
-        "delivery"
-      ],
-      "invocation_contract": {
-        "inputs": [
-          {
-            "name": "issue_filter",
-            "type": "string",
-            "description": "Optional label, milestone, or assignee filter for the issue queue.",
-            "required": false
-          },
-          {
-            "name": "batch_size",
-            "type": "integer",
-            "description": "Maximum issues per Tech Lead batch. Defaults to 5.",
-            "required": false
-          }
-        ],
-        "outputs": [
-          {
-            "name": "delivery_report",
-            "type": "string",
-            "description": "Summary of issues processed, PRs opened, and failures.",
-            "required": true
-          }
-        ],
-        "side_effects": [
-          "creates git worktrees",
-          "writes files",
-          "opens PRs on GitHub",
-          "merges branches"
-        ]
-      },
-      "authored_by": "convergent-systems-key",
-      "tags": [
-        "sprint",
-        "delivery",
-        "tdd",
-        "agents",
-        "pm"
       ],
       "lifecycle": "stable"
     },
