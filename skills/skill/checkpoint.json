@@ -6,17 +6,38 @@
   "name": "Checkpoint",
   "description": "Snapshot in-flight work — goals, decisions, file paths, branch state, next step — to a structured checkpoint file so a later session can resume exactly where this one left off.",
   "system_prompt_fragment": "Write a checkpoint file at ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md. Include: current goal (1 sentence), decisions made (bulleted), files in flight (paths + status), last known-good git ref, exact next step to resume. Write it so a cold-start agent can pick up without asking questions. Note any open blockers or unanswered questions.",
-  "applicable_domains": ["session-management", "continuity"],
+  "applicable_domains": [
+    "session-management",
+    "continuity"
+  ],
   "invocation_contract": {
     "inputs": [
-      {"name": "context", "type": "string", "description": "Current task description and state.", "required": false}
+      {
+        "name": "context",
+        "type": "string",
+        "description": "Current task description and state.",
+        "required": false
+      }
     ],
     "outputs": [
-      {"name": "checkpoint_path", "type": "string", "description": "Path to the written checkpoint file.", "required": true}
+      {
+        "name": "checkpoint_path",
+        "type": "string",
+        "description": "Path to the written checkpoint file.",
+        "required": true
+      }
     ],
-    "side_effects": ["writes ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md"]
+    "side_effects": [
+      "writes ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md"
+    ]
   },
   "authored_by": "convergent-systems-key",
-  "tags": ["session", "checkpoint", "continuity", "handoff"],
-  "lifecycle": "stable"
+  "tags": [
+    "session",
+    "checkpoint",
+    "continuity",
+    "handoff"
+  ],
+  "lifecycle": "stable",
+  "category": "governance"
 }

@@ -6,18 +6,45 @@
   "name": "Repo",
   "description": "Repository structure tool — monorepo or polyrepo migration in either direction, preserving git history.",
   "system_prompt_fragment": "Manage repository structure: convert to monorepo (merge repos with history), split a repo (extract subdirectory with history using git filter-repo), or standardize layout. Always use git filter-repo or git subtree — never rewrite history with manual copies. Preserve all commit history. Create a plan first, wait for approval, then execute.",
-  "applicable_domains": ["git", "architecture"],
+  "applicable_domains": [
+    "git",
+    "architecture"
+  ],
   "invocation_contract": {
     "inputs": [
-      {"name": "operation", "type": "string", "description": "monorepo | split | extract | merge | standardize", "required": true},
-      {"name": "target", "type": "string", "description": "Repository or subdirectory path.", "required": true}
+      {
+        "name": "operation",
+        "type": "string",
+        "description": "monorepo | split | extract | merge | standardize",
+        "required": true
+      },
+      {
+        "name": "target",
+        "type": "string",
+        "description": "Repository or subdirectory path.",
+        "required": true
+      }
     ],
     "outputs": [
-      {"name": "result", "type": "string", "description": "Summary of structural changes.", "required": true}
+      {
+        "name": "result",
+        "type": "string",
+        "description": "Summary of structural changes.",
+        "required": true
+      }
     ],
-    "side_effects": ["may rewrite git history", "creates or modifies repositories"]
+    "side_effects": [
+      "may rewrite git history",
+      "creates or modifies repositories"
+    ]
   },
   "authored_by": "convergent-systems-key",
-  "tags": ["git", "monorepo", "polyrepo", "structure"],
-  "lifecycle": "stable"
+  "tags": [
+    "git",
+    "monorepo",
+    "polyrepo",
+    "structure"
+  ],
+  "lifecycle": "stable",
+  "category": "coding"
 }

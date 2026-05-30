@@ -31,5 +31,6 @@
     "sync",
     "workflow"
   ],
-  "lifecycle": "stable"
+  "lifecycle": "stable",
+  "category": "product"
 }

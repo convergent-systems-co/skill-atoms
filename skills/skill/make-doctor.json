@@ -30,5 +30,6 @@
     "ci",
     "hooks"
   ],
-  "lifecycle": "stable"
+  "lifecycle": "stable",
+  "category": "governance"
 }

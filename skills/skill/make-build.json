@@ -35,5 +35,6 @@
     "pull-request",
     "workflow"
   ],
-  "lifecycle": "stable"
+  "lifecycle": "stable",
+  "category": "product"
 }

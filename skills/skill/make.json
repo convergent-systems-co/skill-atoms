@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "name": "Make",
   "description": "Unified make dispatcher. Delegates to the correct sub-skill (work/clean/build/test) based on the subcommand argument.",
-  "system_prompt_fragment": "Dispatch to the correct sub-skill: /make work \u2192 PM mode + multi-agent delivery team. /make clean \u2192 purge merged branches, aggregate in-flight, hand off to build. /make build \u2192 commit, push, open PR, merge. /make test \u2192 discover and run test suite. Read the subcommand and immediately invoke the matching sub-skill. Do not summarize or ask clarifying questions.",
+  "system_prompt_fragment": "Dispatch to the correct sub-skill: /make work → PM mode + multi-agent delivery team. /make clean → purge merged branches, aggregate in-flight, hand off to build. /make build → commit, push, open PR, merge. /make test → discover and run test suite. Read the subcommand and immediately invoke the matching sub-skill. Do not summarize or ask clarifying questions.",
   "applicable_domains": [
     "workflow",
     "git",
@@ -29,7 +29,7 @@
       }
     ],
     "side_effects": [
-      "delegates to sub-skills \u2014 see their side effects"
+      "delegates to sub-skills — see their side effects"
     ]
   },
   "authored_by": "convergent-systems-key",
@@ -40,7 +40,7 @@
   ],
   "lifecycle": "stable",
   "depends_on": [
-    "make-work",
+    "make-sprint",
     "make-clean",
     "make-test",
     "make-build",
@@ -48,6 +48,11 @@
     "make-sync",
     "make-review",
     "make-doctor",
-    "make-atoms"
+    "make-atoms",
+    "make-project"
+  ],
+  "category": "product",
+  "invocation": [
+    "/make project"
   ]
 }

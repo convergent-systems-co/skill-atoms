@@ -124,6 +124,26 @@
       "description": "Slugs of skills this skill depends on. Installing this skill also installs all listed dependencies.",
       "uniqueItems": true
     },
+    "category": {
+      "type": "string",
+      "enum": [
+        "coding",
+        "dotnet",
+        "data",
+        "design",
+        "product",
+        "operations",
+        "finance",
+        "legal",
+        "sales",
+        "marketing",
+        "hr",
+        "support",
+        "knowledge",
+        "governance"
+      ],
+      "description": "Single primary category for grouping skills in selection/presentation. Mirrors schema-atoms /v1/skill.schema.json."
+    },
     "events": {
       "type": "array",
       "uniqueItems": true,

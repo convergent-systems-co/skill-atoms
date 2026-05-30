@@ -4,7 +4,7 @@
   "id": "skill/project-workspace",
   "version": "1.0.0",
   "name": "Project Workspace",
-  "description": "[Retired \u2014 use /project-claude or /project-copilot instead] Manage AI workspace configuration for a project \u2014 project.yaml, integration files, and tool settings.",
+  "description": "[Retired — use /project-claude or /project-copilot instead] Manage AI workspace configuration for a project — project.yaml, integration files, and tool settings.",
   "system_prompt_fragment": "Set up or update the AI workspace configuration for this project. Create or update: project.yaml (tooling, test commands, build commands), .claude/settings.json (permissions, hooks), CLAUDE.md (project-specific instructions). Inspect existing configuration and propose improvements. Never overwrite user-customized values without confirmation.",
   "applicable_domains": [
     "configuration",
@@ -37,5 +37,6 @@
     "workspace",
     "tooling"
   ],
-  "lifecycle": "retired"
+  "lifecycle": "retired",
+  "category": "product"
 }
