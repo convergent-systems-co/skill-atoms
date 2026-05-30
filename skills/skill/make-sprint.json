@@ -36,8 +36,5 @@
     "multi-agent"
   ],
   "lifecycle": "stable",
-  "category": "product",
-  "invocation": [
-    "/make-sprint"
-  ]
+  "category": "product"
 }
