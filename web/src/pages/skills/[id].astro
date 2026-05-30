@@ -4,7 +4,9 @@ import catalog from "../../../public/exports/catalog.json";
 
 export function getStaticPaths() {
   return catalog.compositions.map((composition: any) => ({
-    params: { id: composition.id },
+    // composition.id is namespaced "<type>/<slug>"; strip the leading segment
+    // so the single [id] param has no embedded slash (which breaks the build).
+    params: { id: composition.id.replace(/^[^/]+\//, "") },
     props: { composition },
   }));
 }

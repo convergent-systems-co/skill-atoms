@@ -1,0 +1,22 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/make-clean",
+  "version": "1.0.0",
+  "name": "Make Clean — Workspace Cleanup",
+  "description": "Purge merged branches, worktrees, and stashes across the repo and all submodules. Aggregate surviving in-flight work into a single dated branch. Hand off to make build. Operates on primary repo and all git submodules with GitHub remotes.",
+  "system_prompt_fragment": "Clean the git workspace. Phase 0: discover primary repo + submodules. Phase 1: inventory (default branch, all branches + merge status, all worktrees, all stashes, fetch --prune). Phase 2: delete merged branches and their worktrees (no prompt — they're already in default). Phase 3: drop merged stashes (base commit is ancestor of default). Phase 4: aggregate surviving in-flight branches into aggregate/<YYYY-MM-DD>, merge each with --no-ff, apply surviving stashes. Phase 5: prune worktrees. Phase 6: hand off to make build.",
+  "applicable_domains": ["code", "git"],
+  "invocation_contract": {
+    "inputs": [
+      { "name": "dry_run", "type": "boolean", "description": "When true, report what would be deleted without deleting. Defaults to false.", "required": false }
+    ],
+    "outputs": [
+      { "name": "cleanup_report", "type": "string", "description": "Summary of branches deleted, stashes dropped, and aggregate branch created.", "required": true }
+    ],
+    "side_effects": ["deletes local and remote git branches", "removes git worktrees", "drops git stashes", "creates aggregate branch"]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": ["git", "cleanup", "branches", "worktrees", "stash"],
+  "lifecycle": "stable"
+}
