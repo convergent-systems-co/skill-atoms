@@ -14,10 +14,6 @@
   ],
   "authored_by": "convergent-systems-key",
   "lifecycle": "stable",
-  "invocation": [
-    "/make-project",
-    "/make project"
-  ],
   "tags": [
     "make",
     "project",

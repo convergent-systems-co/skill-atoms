@@ -51,8 +51,5 @@
     "make-atoms",
     "make-project"
   ],
-  "category": "product",
-  "invocation": [
-    "/make project"
-  ]
+  "category": "product"
 }
