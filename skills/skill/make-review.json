@@ -29,5 +29,6 @@
     "stubs",
     "dead-code"
   ],
-  "lifecycle": "stable"
+  "lifecycle": "stable",
+  "category": "product"
 }

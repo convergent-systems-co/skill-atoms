@@ -41,5 +41,6 @@
   "depends_on": [
     "project-claude",
     "project-copilot"
-  ]
+  ],
+  "category": "product"
 }

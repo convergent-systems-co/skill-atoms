@@ -37,5 +37,6 @@
     "claude",
     "project-yaml"
   ],
-  "lifecycle": "stable"
+  "lifecycle": "stable",
+  "category": "product"
 }
