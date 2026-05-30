@@ -1,1 +1,2712 @@
-{"version":"0.1.0","atoms":[],"compositions":[],"rules":[]}
+{
+  "catalog": "skill-atoms",
+  "version": "0.1.0",
+  "built_at": "2026-05-30T20:20:15+00:00",
+  "atoms": [
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/atom-status",
+      "version": "1.0.0",
+      "name": "Atom Fleet Status",
+      "description": "Full fleet snapshot of all *-atoms.com catalog sites — deploy health, DNS, HTTPS reachability, atom_types per catalog with item counts, schema compliance, /ai/index.json, Terraform backend, sidenav, brand asset uniformity, builder script, federation field, and registry presence.",
+      "system_prompt_fragment": "Run the atom fleet status check. For each *-atoms.com catalog site check: (1) deploy status from latest CI run, (2) DNS resolution (LIVE/NONE/STALE), (3) HTTPS apex response code, (4) /ai/index.json reachability, (5) schema spec_version compliance, (6) Terraform vs Wrangler backend, (7) deploy-after-merge gate, (8) open PR count. Report as a table grouped by catalog. Flag any site with Apex 000 but green deploy (DNS gap), any /ai/ unreachable on live site, any schema below v1.1.0, and any wrangler.toml present without Terraform.",
+      "applicable_domains": [
+        "atoms",
+        "devops",
+        "fleet"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "org",
+            "type": "string",
+            "description": "GitHub org to scan for *-atoms repos. Defaults to convergent-systems-co.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "fleet_table",
+            "type": "string",
+            "description": "ASCII table of all catalog sites with status columns.",
+            "required": true
+          },
+          {
+            "name": "flags",
+            "type": "array",
+            "description": "List of flagged issues requiring action.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "reads GitHub API",
+          "performs DNS lookups",
+          "makes HTTPS requests to *-atoms.com sites"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "atoms",
+        "fleet",
+        "status",
+        "deploy",
+        "dns"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/brainstorming",
+      "version": "1.0.0",
+      "name": "Brainstorm Before Building",
+      "description": "Explore user intent, requirements, and design space before writing any code. Surfaces constraints, alternatives, and tradeoffs. Must run before any creative work — features, components, new functionality, or behavior modifications. Prevents building the wrong thing.",
+      "system_prompt_fragment": "Before writing any code or UI, run a brainstorming session. Ask: (1) What is the user actually trying to accomplish (not just what they asked for)? (2) What constraints exist (performance, compatibility, existing patterns)? (3) What are 2-3 distinct approaches? For each: pros, cons, implementation complexity, reversibility. (4) What could go wrong? (5) What's out of scope? Surface answers before proposing an approach. Let the user redirect before any implementation begins.",
+      "applicable_domains": [
+        "code",
+        "design",
+        "planning"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "request",
+            "type": "string",
+            "description": "The user's stated request or feature description.",
+            "required": true
+          },
+          {
+            "name": "codebase_context",
+            "type": "string",
+            "description": "Relevant existing code, patterns, or architectural constraints.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "goal_statement",
+            "type": "string",
+            "description": "The underlying goal the user is trying to accomplish.",
+            "required": true
+          },
+          {
+            "name": "approaches",
+            "type": "array",
+            "description": "2-3 distinct approaches with pros, cons, complexity, and reversibility.",
+            "required": true
+          },
+          {
+            "name": "constraints",
+            "type": "array",
+            "description": "Identified constraints that limit the solution space.",
+            "required": true
+          },
+          {
+            "name": "out_of_scope",
+            "type": "array",
+            "description": "Items explicitly excluded from this work.",
+            "required": false
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "brainstorm",
+        "design",
+        "planning",
+        "requirements"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/checkpoint",
+      "version": "1.0.0",
+      "name": "Session Checkpoint",
+      "description": "Capture a complete, resumable snapshot of in-flight work to ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md. Records branch, HEAD SHA, dirty files, active goal, decisions made, files in flight, last green state, next step, open questions, and a verify-on-resume list. Use before /clear, at context limits, or at phase boundaries.",
+      "system_prompt_fragment": "Save a session checkpoint to ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md. Gather: (1) branch + HEAD SHA, (2) dirty files (git status --short), (3) active goal from issue/plan, (4) decisions made this session with rationale, (5) files in flight with line ranges, (6) last green test/build command, (7) next step (one imperative sentence), (8) open questions blocking progress, (9) verify-on-resume list of assertions that must be re-checked against live state. MUST NOT contain secrets. Write timestamp file at ~/.ai/checkpoints/<owner>__<repo>/<UTC>.md and update CHECKPOINT.md pointer.",
+      "applicable_domains": [
+        "code",
+        "session",
+        "continuity"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "active_goal",
+            "type": "string",
+            "description": "The current issue, task, or objective being worked on.",
+            "required": false
+          },
+          {
+            "name": "next_step",
+            "type": "string",
+            "description": "One imperative sentence describing the immediate next action on resume.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "checkpoint_path",
+            "type": "string",
+            "description": "Absolute path to the written CHECKPOINT.md file.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "writes ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md",
+          "writes ~/.ai/checkpoints/<owner>__<repo>/<UTC>.md timestamp entry"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "checkpoint",
+        "handoff",
+        "continuity",
+        "session"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/code-review",
+      "version": "1.0.0",
+      "name": "Code Review",
+      "description": "Review a code diff for correctness, security, and maintainability. Surfaces findings at HIGH / MEDIUM / LOW severity with file:line citations. Follows the grounding requirement from Code.md §11.5: every medium-or-higher finding includes evidence from the actual diff, not from inference.",
+      "system_prompt_fragment": "Review the diff for correctness, security, and maintainability. Surface HIGH/MEDIUM/LOW findings with file:line citations. For every MEDIUM or HIGH finding you MUST quote the specific line(s) from the diff that produce the finding — a finding without evidence must be withdrawn or downgraded to a question. Describe what is wrong, unsafe, unclear, or fragile and why. Do not describe what the code does (the diff shows that). Propose the smallest targeted fix that addresses the finding. After findings, run an adversarial self-pass: hidden assumptions, undocumented invariants, state-corruption paths, TOCTOU races, logical inconsistencies.",
+      "applicable_domains": [
+        "code",
+        "review"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "diff",
+            "type": "string",
+            "description": "Unified diff or PR diff to review.",
+            "required": true
+          },
+          {
+            "name": "context",
+            "type": "string",
+            "description": "Optional background — PR description, linked issue, relevant architectural context.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "findings",
+            "type": "array",
+            "description": "List of severity-tagged findings with file:line citations.",
+            "required": true
+          },
+          {
+            "name": "adversarial_pass",
+            "type": "string",
+            "description": "Summary of the adversarial self-pass results.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "review",
+        "security",
+        "maintainability",
+        "diff"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/debug-systematically",
+      "version": "1.0.0",
+      "name": "Debug Systematically",
+      "description": "Five-phase systematic debugging: reproduce → isolate → root-cause → fix-with-regression-test → verify. Follows Code.md §11.4. Never proposes a fix before root cause is confirmed. Fixes address the root cause, not the surface symptom. Every fix begins with a failing test that reproduces the bug.",
+      "system_prompt_fragment": "Debug using the five-phase protocol. Do not skip or reorder phases.\n\n1. REPRODUCE — establish a reliable reproduction. If you cannot reproduce, the bug report is the work product; do not guess. Name the exact steps, inputs, and observed versus expected output.\n2. ISOLATE — narrow the failure to the smallest possible surface. Strip away unrelated code, config, and environment variables until the bug is isolated.\n3. ROOT CAUSE — name the root cause explicitly. The fix must address this, not the surface symptom. A symptom-fix is a defect dressed as a fix.\n4. FIX WITH REGRESSION TEST — write a failing test that reproduces the bug first. Then write the minimal fix. The fix is the smallest change that addresses the root cause.\n5. VERIFY — run the test suite. Cite the test-runner output. Claim 'fixed' only after citing the run. After fixing, ask: 'Why was this not caught?' Name the gap — missing coverage, missing validation, missing type safety, missing observability — and either address it or file a follow-up.\n\nApply the 3-cycle local cap: after three failed attempts using the same approach, stop, name what is not working, propose an alternative, and ask before continuing.",
+      "applicable_domains": [
+        "code",
+        "debug"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "bug_report",
+            "type": "string",
+            "description": "Description of the observed failure, error message, or unexpected behavior.",
+            "required": true
+          },
+          {
+            "name": "reproduction_steps",
+            "type": "string",
+            "description": "Known steps to trigger the bug, if available.",
+            "required": false
+          },
+          {
+            "name": "codebase_context",
+            "type": "string",
+            "description": "Relevant code snippets, file paths, or architectural context.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "reproduction",
+            "type": "string",
+            "description": "Confirmed reproduction case.",
+            "required": true
+          },
+          {
+            "name": "root_cause",
+            "type": "string",
+            "description": "Named root cause with evidence.",
+            "required": true
+          },
+          {
+            "name": "fix",
+            "type": "string",
+            "description": "Minimal fix addressing the root cause.",
+            "required": true
+          },
+          {
+            "name": "regression_test",
+            "type": "string",
+            "description": "Test that would have caught this bug.",
+            "required": true
+          },
+          {
+            "name": "gap_analysis",
+            "type": "string",
+            "description": "Why this was not caught and what closes the gap.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write files (regression test and fix)"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "debug",
+        "tdd",
+        "root-cause",
+        "regression"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/dispatching-parallel-agents",
+      "version": "1.0.0",
+      "name": "Dispatch Parallel Agents",
+      "description": "Decompose a multi-task problem into independent units and dispatch subagents in parallel. Use when facing 2+ independent tasks with no shared state or sequential dependencies. Each agent gets a self-contained prompt with full context.",
+      "system_prompt_fragment": "Decompose the work into independent tasks. For each task: (1) confirm it has no dependency on another task's output, (2) write a self-contained agent prompt with full context (the agent has no memory of this conversation), (3) specify what files to read/write and what to return. Dispatch all independent tasks in a single message as parallel tool calls. Wait for all to complete. Synthesize results — do not just concatenate agent outputs; identify conflicts and inconsistencies. Tasks with dependencies must be serialized; tasks without can be parallelized.",
+      "applicable_domains": [
+        "code",
+        "agents",
+        "parallelism"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "tasks",
+            "type": "array",
+            "description": "List of independent tasks to dispatch in parallel.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "synthesis",
+            "type": "string",
+            "description": "Synthesized result from all agent outputs with conflicts identified.",
+            "required": true
+          },
+          {
+            "name": "agent_outputs",
+            "type": "array",
+            "description": "Raw outputs from each dispatched agent.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "spawns parallel subagents",
+          "may write files via subagents"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "agents",
+        "parallel",
+        "subagent",
+        "dispatch"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/finishing-a-development-branch",
+      "version": "1.0.0",
+      "name": "Finish Development Branch",
+      "description": "Guides completion of a development branch: verify all tests pass, run the adversarial self-pass, open PR, wait for CI green, merge. Presents structured options for merge, PR, or cleanup. Use when implementation is complete.",
+      "system_prompt_fragment": "Complete the development branch. Step 1: verify all tests pass (cite output). Step 2: run adversarial self-pass (hidden assumptions, undocumented invariants, state-corruption paths, TOCTOU, logical inconsistencies). Step 3: commit with a Conventional Commit message. Step 4: push and open PR with body including: what changed, why, how to verify, assumptions, what remains. Step 5: wait for CI green. Step 6: merge with merge commit (squash forbidden on non-release branches). Step 7: remove the worktree. Step 8: delete the branch. Report: what was shipped and what follow-ups were filed.",
+      "applicable_domains": [
+        "code",
+        "git",
+        "delivery"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "branch",
+            "type": "string",
+            "description": "The feature branch to finish and merge.",
+            "required": false
+          },
+          {
+            "name": "linked_issue",
+            "type": "string",
+            "description": "Issue number or URL to close on merge.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "pr_url",
+            "type": "string",
+            "description": "URL of the opened pull request.",
+            "required": true
+          },
+          {
+            "name": "ship_report",
+            "type": "string",
+            "description": "Summary of what was shipped and any follow-ups filed.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "pushes branch to remote",
+          "opens GitHub PR",
+          "merges branch",
+          "removes git worktree",
+          "deletes feature branch"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "pr",
+        "merge",
+        "delivery",
+        "ci"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/frontend-design",
+      "version": "1.0.0",
+      "name": "Frontend Design",
+      "description": "Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use when building web components, pages, or applications.",
+      "system_prompt_fragment": "Build frontend interfaces with high design quality. Avoid generic AI aesthetics: no bootstrap-default grey cards, no generic hero sections, no empty state illustrations with clouds. Instead: use deliberate color, real typography scale, meaningful whitespace, purposeful motion. Consider the information hierarchy first — what does the user need to see in what order? Then design backwards from that. Use semantic HTML. Meet WCAG 2.1 AA minimum. Test keyboard navigation. No magic numbers — all spacing, color, and type from a declared design system or tokens.",
+      "applicable_domains": [
+        "frontend",
+        "design",
+        "ui"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "component_description",
+            "type": "string",
+            "description": "What the component or page should do and who uses it.",
+            "required": true
+          },
+          {
+            "name": "design_system",
+            "type": "string",
+            "description": "Existing design tokens, Tailwind config, or component library to build on.",
+            "required": false
+          },
+          {
+            "name": "framework",
+            "type": "string",
+            "description": "Target framework: React, Astro, Vue, Svelte, plain HTML. Defaults to inferred from repo.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "component_code",
+            "type": "string",
+            "description": "Production-ready component code.",
+            "required": true
+          },
+          {
+            "name": "design_notes",
+            "type": "string",
+            "description": "Rationale for key design decisions.",
+            "required": false
+          }
+        ],
+        "side_effects": [
+          "writes component files"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "frontend",
+        "ui",
+        "design",
+        "css",
+        "html",
+        "react",
+        "astro"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-clean",
+      "version": "1.0.0",
+      "name": "Make Clean — Workspace Cleanup",
+      "description": "Purge merged branches, worktrees, and stashes across the repo and all submodules. Aggregate surviving in-flight work into a single dated branch. Hand off to make build. Operates on primary repo and all git submodules with GitHub remotes.",
+      "system_prompt_fragment": "Clean the git workspace. Phase 0: discover primary repo + submodules. Phase 1: inventory (default branch, all branches + merge status, all worktrees, all stashes, fetch --prune). Phase 2: delete merged branches and their worktrees (no prompt — they're already in default). Phase 3: drop merged stashes (base commit is ancestor of default). Phase 4: aggregate surviving in-flight branches into aggregate/<YYYY-MM-DD>, merge each with --no-ff, apply surviving stashes. Phase 5: prune worktrees. Phase 6: hand off to make build.",
+      "applicable_domains": [
+        "code",
+        "git"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "dry_run",
+            "type": "boolean",
+            "description": "When true, report what would be deleted without deleting. Defaults to false.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "cleanup_report",
+            "type": "string",
+            "description": "Summary of branches deleted, stashes dropped, and aggregate branch created.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "deletes local and remote git branches",
+          "removes git worktrees",
+          "drops git stashes",
+          "creates aggregate branch"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "cleanup",
+        "branches",
+        "worktrees",
+        "stash"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-test",
+      "version": "1.0.0",
+      "name": "Make Test — Run Test Suite",
+      "description": "Discover and run the project's test suite. Report failures with file:line citations. Supports Go (go test), Node (jest/vitest/mocha), Python (pytest), and Astro (astro check). Quarantine flaky tests identified on repeated runs.",
+      "system_prompt_fragment": "Run the test suite. Detect the test runner from the repo (go.mod → go test ./...; package.json scripts → npm/pnpm test; requirements.txt + pytest → pytest; astro.config → astro check). Run tests. On failure: cite each failure with file:line, the failing assertion, and the actual vs expected output. Identify flaky tests (pass on retry with no code change) and mark them for quarantine. Never claim tests pass without citing the test-runner output.",
+      "applicable_domains": [
+        "code",
+        "testing"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "path_filter",
+            "type": "string",
+            "description": "Optional path or package pattern to restrict which tests run.",
+            "required": false
+          },
+          {
+            "name": "repeat",
+            "type": "integer",
+            "description": "Run count for flaky test detection. Defaults to 1.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "test_output",
+            "type": "string",
+            "description": "Full test runner output including pass/fail counts.",
+            "required": true
+          },
+          {
+            "name": "failures",
+            "type": "array",
+            "description": "List of failing tests with file:line, assertion, and actual vs expected.",
+            "required": true
+          },
+          {
+            "name": "flaky",
+            "type": "array",
+            "description": "Tests that passed on retry — candidates for quarantine.",
+            "required": false
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "test",
+        "tdd",
+        "go",
+        "jest",
+        "pytest",
+        "ci"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-work",
+      "version": "1.0.0",
+      "name": "Make Work — Sprint Delivery",
+      "description": "Full delivery cycle: recover from checkpoint, ingest the issue queue, partition by domain, spawn Tech Lead agents per batch, run TDD Writer → Coder → Adversarial Tester → PR → merge pipeline for each issue. Use when starting a sprint, resuming in-flight work, or executing a multi-issue delivery run.",
+      "system_prompt_fragment": "Execute the make-work delivery pipeline. Phase 0: check for checkpoint, scan stale worktrees and open PRs. Phase 1: pre-flight (no mid-merge state, gh authenticated). Phase 2: build repo set (primary + submodules). Phase 3: ingest issue queue from GitHub Projects, Issues, project.yaml, ISSUES.md, GOALS.md — assign only at Task level. Phase 4: partition into domain batches, spawn one Tech Lead per batch. Each TL runs: worktree → plan → TDD Writer → Coder → Adversarial Tester → PR → merge. Phase 5: Code Reviewer sweep after queue is empty. Phase 6: /make build.",
+      "applicable_domains": [
+        "code",
+        "project",
+        "delivery"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "issue_filter",
+            "type": "string",
+            "description": "Optional label, milestone, or assignee filter for the issue queue.",
+            "required": false
+          },
+          {
+            "name": "batch_size",
+            "type": "integer",
+            "description": "Maximum issues per Tech Lead batch. Defaults to 5.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "delivery_report",
+            "type": "string",
+            "description": "Summary of issues processed, PRs opened, and failures.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates git worktrees",
+          "writes files",
+          "opens PRs on GitHub",
+          "merges branches"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "sprint",
+        "delivery",
+        "tdd",
+        "agents",
+        "pm"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/receiving-code-review",
+      "version": "1.0.0",
+      "name": "Receive Code Review",
+      "description": "Process incoming code review feedback with technical rigor. Verify each finding against the actual code before agreeing. Distinguish valid findings from misreadings. Implement only confirmed findings. Do not perform blind, sycophantic agreement — that's as harmful as ignoring review.",
+      "system_prompt_fragment": "Process code review feedback with rigor. For each finding: (1) Read the cited code. (2) Verify the finding is accurate — check the actual file:line, not your assumption. (3) If valid: implement the smallest fix that addresses the finding and explain what you changed. (4) If invalid: explain specifically why the code is correct, with the relevant code quoted. (5) If unclear: ask for clarification before implementing. Never agree sycophantically without verifying. Never rewrite sections not cited in the review. One commit per review finding.",
+      "applicable_domains": [
+        "code",
+        "review"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "review_feedback",
+            "type": "string",
+            "description": "The review comments or findings to process.",
+            "required": true
+          },
+          {
+            "name": "diff",
+            "type": "string",
+            "description": "The original diff the review was made against.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "finding_responses",
+            "type": "array",
+            "description": "Per-finding response: valid/invalid/clarification-needed, with evidence and action taken.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write files (implementing valid findings)",
+          "may create commits"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code-review",
+        "feedback",
+        "quality"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/requesting-code-review",
+      "version": "1.0.0",
+      "name": "Request Code Review",
+      "description": "Prepare and request a code review after completing implementation. Summarizes what changed, why, how to verify, what assumptions were made, and what remains. Run before merging any non-trivial change.",
+      "system_prompt_fragment": "Prepare a code review request. Include: (1) What changed — the diff scope and key decisions. (2) Why — the motivation; link the issue or plan. (3) How to verify — exact commands a reviewer should run to confirm correctness. (4) Assumptions — any gap you filled that wasn't specified. (5) What remains — known follow-ups not in this change. (6) Risk — any area of the diff that deserves extra scrutiny. Run the adversarial self-pass before submitting: hidden assumptions, undocumented invariants, state-corruption paths, TOCTOU, logical inconsistencies.",
+      "applicable_domains": [
+        "code",
+        "review",
+        "git"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "diff",
+            "type": "string",
+            "description": "The diff or PR diff to be reviewed.",
+            "required": true
+          },
+          {
+            "name": "linked_issue",
+            "type": "string",
+            "description": "Issue or plan reference motivating the change.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "review_request",
+            "type": "string",
+            "description": "Structured review request covering what/why/how-to-verify/assumptions/remains/risk.",
+            "required": true
+          },
+          {
+            "name": "adversarial_pass",
+            "type": "string",
+            "description": "Results of the adversarial self-pass checklist.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code-review",
+        "pr",
+        "quality",
+        "merge"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/skill-creator",
+      "version": "1.0.0",
+      "name": "Skill Creator",
+      "description": "Create new skills, modify and improve existing skills, and measure skill performance. Guides through the full skill lifecycle: capture intent → research → write SKILL.md → test with evals → iterate. Use when creating a skill from scratch, editing an existing skill, running evals, or optimizing a skill's triggering description.",
+      "system_prompt_fragment": "Create or improve a skill. Step 1 CAPTURE: understand what the skill should do, when it triggers, what the output format is. Step 2 RESEARCH: explore edge cases, input/output formats, dependencies. Step 3 WRITE: produce SKILL.md with name, description (include specific trigger contexts), and body instructions explaining WHY not just WHAT. Step 4 TEST: write 2-3 realistic test prompts; spawn parallel runs (with-skill vs without). Step 5 GRADE: evaluate results against assertions; launch the eval viewer. Step 6 ITERATE: improve the skill based on feedback. Repeat until results are satisfactory.",
+      "applicable_domains": [
+        "skills",
+        "meta",
+        "evaluation"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "skill_intent",
+            "type": "string",
+            "description": "What the skill should do and when it should trigger.",
+            "required": true
+          },
+          {
+            "name": "existing_skill_path",
+            "type": "string",
+            "description": "Path to an existing SKILL.md to improve, if applicable.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "skill_md",
+            "type": "string",
+            "description": "The written or updated SKILL.md content.",
+            "required": true
+          },
+          {
+            "name": "eval_results",
+            "type": "string",
+            "description": "Evaluation results comparing with-skill vs without-skill runs.",
+            "required": false
+          }
+        ],
+        "side_effects": [
+          "writes SKILL.md file",
+          "may spawn parallel eval agents"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "skill",
+        "meta",
+        "eval",
+        "creation"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/subagent-driven-development",
+      "version": "1.0.0",
+      "name": "Subagent-Driven Development",
+      "description": "Execute implementation plans by spawning one subagent per independent task. Each subagent owns a disjoint file set (OWNS list), runs TDD, and returns a summary. Run code review between batches. Use when executing plans with multiple independent implementation tasks.",
+      "system_prompt_fragment": "Execute the plan using subagents. For each independent task: (1) define the OWNS list (files this agent may modify — no overlap with other agents), (2) write a self-contained prompt including the plan section, acceptance criteria, OWNS list, and test strategy, (3) dispatch the agent. After each batch: run the Code Reviewer sweep (stubs, placeholders, unwired exports, TODOs, commented-out code). Dispatch the next batch only after review passes. Never dispatch agents with overlapping OWNS lists in the same batch.",
+      "applicable_domains": [
+        "code",
+        "agents",
+        "delivery"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "plan",
+            "type": "string",
+            "description": "The implementation plan to execute, with tasks partitioned by ownership.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "batch_results",
+            "type": "array",
+            "description": "Results from each batch of subagents including review findings.",
+            "required": true
+          },
+          {
+            "name": "delivery_summary",
+            "type": "string",
+            "description": "What was implemented, what passed review, what follow-ups remain.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "spawns subagents",
+          "writes files via subagents",
+          "may create commits"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "agents",
+        "tdd",
+        "parallel",
+        "delivery"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/systematic-debugging",
+      "version": "1.0.0",
+      "name": "Systematic Debugging",
+      "description": "Five-phase debugging protocol: reproduce → isolate → root cause → fix with regression test → verify. Use when encountering any bug, test failure, or unexpected behavior. Never proposes a fix before root cause is confirmed. Enforces the 3-cycle local cap and 5-cycle total cap to prevent thrashing.",
+      "system_prompt_fragment": "Debug using five phases in order — no skipping. Phase 1 REPRODUCE: establish a reliable reproduction; if you cannot, the bug report is the deliverable. Phase 2 ISOLATE: narrow to the smallest surface. Phase 3 ROOT CAUSE: name the root cause explicitly before proposing any fix. Phase 4 FIX + REGRESSION TEST: write a failing test first, then the minimal fix. Phase 5 VERIFY: run the suite and cite the output. After fixing: 'Why was this not caught?' — name the gap. Cap: after 3 failed attempts with the same approach, stop and propose an alternative. After 5 total attempts, escalate.",
+      "applicable_domains": [
+        "code",
+        "debug"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "bug_report",
+            "type": "string",
+            "description": "Description of the observed failure, error message, or unexpected behavior.",
+            "required": true
+          },
+          {
+            "name": "reproduction_steps",
+            "type": "string",
+            "description": "Known steps to trigger the bug, if available.",
+            "required": false
+          },
+          {
+            "name": "codebase_context",
+            "type": "string",
+            "description": "Relevant code snippets, file paths, or architectural context.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "reproduction",
+            "type": "string",
+            "description": "Confirmed reproduction case.",
+            "required": true
+          },
+          {
+            "name": "root_cause",
+            "type": "string",
+            "description": "Named root cause with evidence.",
+            "required": true
+          },
+          {
+            "name": "fix",
+            "type": "string",
+            "description": "Minimal fix addressing the root cause.",
+            "required": true
+          },
+          {
+            "name": "regression_test",
+            "type": "string",
+            "description": "Test that would have caught this bug.",
+            "required": true
+          },
+          {
+            "name": "gap_analysis",
+            "type": "string",
+            "description": "Why this was not caught and what closes the gap.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write files (regression test and fix)"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "debug",
+        "root-cause",
+        "tdd",
+        "regression"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/test-driven-development",
+      "version": "1.0.0",
+      "name": "Test-Driven Development",
+      "description": "Write a failing test before writing implementation code. The test must be red before any production code is written. Implementation makes the test green with the minimal change. Refactor only with tests green. Apply when implementing any feature or bugfix.",
+      "system_prompt_fragment": "Follow the TDD cycle strictly. Step 1: write the failing test that describes the behavior you are adding. The test must reference the function/method/endpoint before it exists. Step 2: run the test — confirm it is RED. If it passes without implementation, the test is wrong; fix it. Step 3: write the minimal production code that makes the test green. Do not write more code than the test requires. Step 4: run the test — confirm GREEN. Step 5: refactor with tests green. Never write production code before a failing test exists. Never modify test assertions to make them pass.",
+      "applicable_domains": [
+        "code",
+        "testing"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "behavior_description",
+            "type": "string",
+            "description": "The behavior to implement, expressed as acceptance criteria or a user story.",
+            "required": true
+          },
+          {
+            "name": "existing_tests",
+            "type": "string",
+            "description": "Existing test file context to guide test placement.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "failing_test",
+            "type": "string",
+            "description": "The failing test code (RED state confirmed).",
+            "required": true
+          },
+          {
+            "name": "implementation",
+            "type": "string",
+            "description": "Minimal production code that makes the test green.",
+            "required": true
+          },
+          {
+            "name": "test_output_red",
+            "type": "string",
+            "description": "Test runner output confirming the test was RED before implementation.",
+            "required": true
+          },
+          {
+            "name": "test_output_green",
+            "type": "string",
+            "description": "Test runner output confirming the test is GREEN after implementation.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "writes test files",
+          "writes production code files"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "tdd",
+        "testing",
+        "red-green-refactor"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/using-git-worktrees",
+      "version": "1.0.0",
+      "name": "Use Git Worktrees",
+      "description": "Ensure an isolated workspace exists for feature work via git worktrees. Creates a worktree at the canonical location before any implementation. Single-repo work: <repo>/.worktrees/<name>/. Cross-repo or persistent: ~/.ai/worktrees/<name>/. Use at the start of any non-trivial feature or before executing implementation plans.",
+      "system_prompt_fragment": "Before starting feature work: (1) Determine the lifecycle — single-repo ephemeral → <repo>/.worktrees/<name>/; cross-repo or persistent → ~/.ai/worktrees/<name>/. (2) Create the worktree: git worktree add <path> -b <branch> main. (3) All file writes go in the worktree — never touch the main worktree. (4) On completion: git worktree remove <path> (use remove, not rm -rf). If a worktree already exists for this branch, use it. Never create worktrees at ad-hoc locations (../branch/, /tmp/, sibling dirs).",
+      "applicable_domains": [
+        "code",
+        "git"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "branch_name",
+            "type": "string",
+            "description": "The feature branch name (kebab-case).",
+            "required": true
+          },
+          {
+            "name": "base_branch",
+            "type": "string",
+            "description": "The base branch to branch from. Defaults to main.",
+            "required": false
+          },
+          {
+            "name": "global",
+            "type": "boolean",
+            "description": "When true, place at ~/.ai/worktrees/ (cross-repo/persistent). Defaults to false.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "worktree_path",
+            "type": "string",
+            "description": "Absolute path to the created worktree.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates git worktree",
+          "creates feature branch"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "worktree",
+        "isolation"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/verification-before-completion",
+      "version": "1.0.0",
+      "name": "Verify Before Claiming Done",
+      "description": "Run verification commands and confirm output before claiming any work is complete, fixed, or passing. Evidence before assertions always. Use before committing, opening PRs, or reporting success. Never cite your own reasoning as proof — run the command and cite the output.",
+      "system_prompt_fragment": "Before claiming work is complete: (1) Run the relevant verification command (test suite, build, type-check, lint). (2) Paste or cite the actual output — not a summary, the output. (3) For 'tests pass': cite the test runner output with pass count. (4) For 'build succeeds': cite the build tool output and exit code. (5) For 'fix works': run it and cite the run. If you cannot produce the independent source, downgrade the claim to 'I believe X but did not verify' and surface the gap. Citing your own earlier statement as proof is not verification.",
+      "applicable_domains": [
+        "code",
+        "testing",
+        "quality"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "claim",
+            "type": "string",
+            "description": "The completion claim to verify (e.g. 'tests pass', 'build succeeds', 'fix works').",
+            "required": true
+          },
+          {
+            "name": "verification_command",
+            "type": "string",
+            "description": "The command to run for verification, if known.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "verification_output",
+            "type": "string",
+            "description": "Actual output from the verification command.",
+            "required": true
+          },
+          {
+            "name": "verified",
+            "type": "boolean",
+            "description": "Whether the claim is confirmed by the output.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "runs test suite or build command"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "verification",
+        "testing",
+        "evidence",
+        "ci"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/write-conventional-commit",
+      "version": "1.0.0",
+      "name": "Write Conventional Commit",
+      "description": "Produce a Conventional Commits message from a staged diff or change description. Enforces Code.md §11.2: correct type prefix, 72-char subject line, imperative mood, body explaining why not what, one logical change per commit.",
+      "system_prompt_fragment": "Write a Conventional Commits message from the provided diff or change description.\n\nRules:\n- Subject line: <type>(<optional-scope>): <imperative-mood description> — max 72 characters, no trailing period.\n- Type prefix is mandatory. Choose the most specific match: feat (new capability), fix (bug fix), refactor (behavior-preserving restructure), perf (performance improvement without behavior change), docs (documentation only), test (test-only changes), build (build system or tooling), ci (CI/CD config), chore (housekeeping — deps, config, non-code).\n- Imperative mood: 'add', not 'added'; 'fix', not 'fixed'; 'remove', not 'removed'.\n- Body (optional but preferred on non-trivial changes): explains WHY this change was made, not what the diff shows. Wrap at 72 characters. Separate from subject with a blank line.\n- One logical change per commit. If the diff contains multiple logical changes, surface them as separate commit messages and explain why they should be split.\n- Co-Authored-By trailer: include when AI generated or co-authored the change.\n- Do NOT include a 'BREAKING CHANGE' footer unless the diff actually breaks a public API or contract — name the break explicitly if so.",
+      "applicable_domains": [
+        "code",
+        "commit",
+        "git"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "diff_or_description",
+            "type": "string",
+            "description": "Staged diff (git diff --cached output) or a prose description of the change.",
+            "required": true
+          },
+          {
+            "name": "scope",
+            "type": "string",
+            "description": "Optional scope hint, e.g. the module or package name.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "commit_message",
+            "type": "string",
+            "description": "Full Conventional Commits message ready to pass to git commit -m.",
+            "required": true
+          },
+          {
+            "name": "split_suggestion",
+            "type": "string",
+            "description": "If the diff contains multiple logical changes, suggested split into separate commits.",
+            "required": false
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "commit",
+        "conventional-commits",
+        "code-style"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/writing-plans",
+      "version": "1.0.0",
+      "name": "Write Implementation Plan",
+      "description": "Produce a structured implementation plan before touching code on any medium or non-trivial task. Covers objective, alternatives table (minimum 2 options), scope, numbered steps, testing strategy, risk assessment, dependencies, and backward compatibility. Required for 2+ file changes.",
+      "system_prompt_fragment": "Write an implementation plan with these sections: (1) Objective — one sentence of what success looks like. (2) Alternatives table — at minimum two approaches with pros/cons/verdict; 'do nothing' counts as an alternative. (3) Scope — files to create, modify, delete. (4) Approach — numbered steps with path:line citations where known. (5) Testing strategy — what tests prove it works. (6) Risk assessment — what could go wrong and mitigation. (7) Dependencies — what must land first. (8) Backward compatibility — what breaks and the migration path. Present the plan; wait for approval before executing.",
+      "applicable_domains": [
+        "code",
+        "planning"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "objective",
+            "type": "string",
+            "description": "What the implementation should achieve.",
+            "required": true
+          },
+          {
+            "name": "codebase_context",
+            "type": "string",
+            "description": "Relevant code, architecture, or constraints.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "plan",
+            "type": "string",
+            "description": "Full structured implementation plan.",
+            "required": true
+          },
+          {
+            "name": "alternatives_table",
+            "type": "string",
+            "description": "Table of at least two considered approaches with pros/cons/verdict.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "planning",
+        "architecture",
+        "implementation",
+        "adr"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/writing-skills",
+      "version": "1.0.0",
+      "name": "Write Skills",
+      "description": "Write or edit SKILL.md files for Claude Code skills. Apply the three-level loading principle: metadata (name + description) always in context, SKILL.md body loaded on trigger, bundled resources on demand. Use when creating new skills, editing existing ones, or verifying skills work before deployment.",
+      "system_prompt_fragment": "Write or edit a SKILL.md. Required frontmatter: name (skill identifier), description (when to trigger + what it does — this is the primary triggering mechanism, make it specific). Body: explain WHY each step matters, not just WHAT to do. Use theory of mind — the model executing this has no memory of this conversation. Keep SKILL.md under 500 lines; use bundled resources for larger reference material. Test the skill by running it against 2-3 real prompts. The description field must be specific enough to trigger reliably — avoid vague 'Use when working with X' in favor of 'Use when the user asks to build/fix/review X or when you notice Y pattern.'",
+      "applicable_domains": [
+        "skills",
+        "meta"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "skill_name",
+            "type": "string",
+            "description": "The name of the skill to write or edit.",
+            "required": true
+          },
+          {
+            "name": "existing_skill_path",
+            "type": "string",
+            "description": "Path to the existing SKILL.md if editing.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "skill_md_content",
+            "type": "string",
+            "description": "The complete SKILL.md content.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "writes or updates SKILL.md"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "skill",
+        "meta",
+        "writing"
+      ],
+      "lifecycle": "stable"
+    }
+  ],
+  "compositions": [
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/audit-command",
+      "version": "1.0.0",
+      "name": "Audit Command",
+      "description": "Log Bash commands and their arguments before execution.",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/audit-command.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/audit",
+      "version": "1.0.0",
+      "name": "Audit",
+      "description": "Append JSONL interaction records to ~/.ai/audit/interactions/YYYY-MM.jsonl for every tool use, session start/end, and stop event.",
+      "events": [
+        "PostToolUse",
+        "PreToolUse",
+        "SessionEnd",
+        "SessionStart",
+        "Stop",
+        "SubagentStop",
+        "UserPromptSubmit"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/audit.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/branch-guard",
+      "version": "1.0.0",
+      "name": "Branch Guard",
+      "description": "Block direct commits, pushes, and merges to protected branches (main, master).",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/branch-guard.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/checkpoint-tick",
+      "version": "1.0.0",
+      "name": "Checkpoint Tick",
+      "description": "Write a CHECKPOINT.md snapshot on each turn to support session recovery.",
+      "events": [
+        "PreToolUse",
+        "Stop"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/checkpoint-tick.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/destructive-gh-guard",
+      "version": "1.0.0",
+      "name": "Destructive GH Guard",
+      "description": "Block destructive gh CLI operations (repo delete, branch force-push, etc.).",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/destructive-gh-guard.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/destructive-kubectl-guard",
+      "version": "1.0.0",
+      "name": "Destructive Kubectl Guard",
+      "description": "Block destructive kubectl operations (delete, drain, cordon) in production contexts.",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/destructive-kubectl-guard.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/destructive-terraform-guard",
+      "version": "1.0.0",
+      "name": "Destructive Terraform Guard",
+      "description": "Block destructive terraform operations (destroy, force-replace) without confirmation.",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/destructive-terraform-guard.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/no-verify-strip",
+      "version": "1.0.0",
+      "name": "No Verify Strip",
+      "description": "Strip --no-verify flags from git commands to enforce pre-commit hook execution.",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/no-verify-strip.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/op-redact",
+      "version": "1.0.0",
+      "name": "OP Redact",
+      "description": "Redact 1Password secret values from tool output before they appear in the conversation.",
+      "events": [
+        "PostToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/op-redact.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/patterns",
+      "version": "1.0.0",
+      "name": "Secret Scan Patterns",
+      "description": "JSON pattern library used by secret-block and secret-precommit for secret detection.",
+      "events": [],
+      "lang": "data",
+      "install_path": "~/.ai/hooks/patterns.json",
+      "wire_on_install": false,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/secret-block",
+      "version": "1.0.0",
+      "name": "Secret Block",
+      "description": "Block Bash commands that would print secret values (env, printenv, cat .env, etc.).",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/secret-block.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/secret-precommit",
+      "version": "1.0.0",
+      "name": "Secret Precommit",
+      "description": "Git pre-commit hook that scans staged files for secrets before they are committed.",
+      "events": [],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/secret-precommit.py",
+      "wire_on_install": false,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "ai-hook",
+      "id": "ai-hook/worktree-guard",
+      "version": "1.0.0",
+      "name": "Worktree Guard",
+      "description": "Enforce §U17 worktree placement rules — worktrees must live in canonical locations.",
+      "events": [
+        "PreToolUse"
+      ],
+      "lang": "python",
+      "install_path": "~/.ai/hooks/worktree-guard.py",
+      "wire_on_install": true,
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance"
+      ],
+      "lifecycle": "stable"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/atoms-discover",
+      "version": "1.0.0",
+      "name": "Atoms Discover",
+      "description": "Navigate the convergent-systems atom ecosystem to find, fetch, or scaffold atoms. Routes 'apply brand X' to brand-atoms, 'use persona Y' to persona-atoms, 'load skill Z' to skill-atoms, etc. Covers discovery, cross-atom reference resolution, and new-atom scaffolding.",
+      "system_prompt_fragment": "You know the full convergent-systems atom ecosystem topology. When the user references any atom by name or type:\n1. IDENTIFY: determine which catalog holds this atom type (brand-atoms, persona-atoms, skill-atoms, prompt-atoms, schema-atoms, plugin-atoms, action-atoms, workflow-atoms).\n2. CHECK: query the catalog's GitHub repo for the atom slug.\n3. FOUND → run `ai atoms fetch <catalog>/<type>/<slug>` and apply/activate it.\n4. NOT FOUND → run `ai atoms fork <catalog>/<type>/<closest-template> <new-slug>` and guide the user to fill in the template, then offer to publish.\nFor personas: always resolve the full reference tree (role-definition, voice-profile, tone-parameter, behavioural-constraints, knowledge-boundaries). For brands: apply brand tokens to settings.toml.",
+      "applicable_domains": [
+        "atoms",
+        "discovery",
+        "configuration",
+        "personas",
+        "brands",
+        "skills"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "query",
+            "type": "string",
+            "description": "Natural language request referencing an atom: 'apply brand X', 'use persona Y', 'load skill Z', etc.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Atom fetched and applied, or scaffold initiated with guidance.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may run ai atoms fetch",
+          "may run ai atoms fork",
+          "may write to ~/.ai/atoms/cache/"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "atoms",
+        "discovery",
+        "brand",
+        "persona",
+        "skill",
+        "scaffold",
+        "cross-catalog"
+      ],
+      "lifecycle": "stable",
+      "category": "governance"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/checkpoint",
+      "version": "1.0.0",
+      "name": "Checkpoint",
+      "description": "Snapshot in-flight work — goals, decisions, file paths, branch state, next step — to a structured checkpoint file so a later session can resume exactly where this one left off.",
+      "system_prompt_fragment": "Write a checkpoint file at ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md. Include: current goal (1 sentence), decisions made (bulleted), files in flight (paths + status), last known-good git ref, exact next step to resume. Write it so a cold-start agent can pick up without asking questions. Note any open blockers or unanswered questions.",
+      "applicable_domains": [
+        "session-management",
+        "continuity"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "context",
+            "type": "string",
+            "description": "Current task description and state.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "checkpoint_path",
+            "type": "string",
+            "description": "Path to the written checkpoint file.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "writes ~/.ai/checkpoints/<owner>__<repo>/CHECKPOINT.md"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "session",
+        "checkpoint",
+        "continuity",
+        "handoff"
+      ],
+      "lifecycle": "stable",
+      "category": "governance"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/cleanup",
+      "version": "1.0.0",
+      "name": "Cleanup",
+      "description": "Remove dead code, unused imports, commented-out blocks, and resolved TODOs. Behavior-preserving: no logic changes, only deletion of unreachable or inert code.",
+      "system_prompt_fragment": "Clean up the file or directory: delete dead code (unreachable branches, unused functions), remove unused imports, strip commented-out code blocks, remove resolved TODO/FIXME comments. Do NOT change any logic. Do NOT refactor. Do NOT rename. One commit per file cleaned. If a TODO is unresolved, leave it. Verify tests still pass after cleanup.",
+      "applicable_domains": [
+        "code"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "target",
+            "type": "string",
+            "description": "File path or directory to clean up.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "changes",
+            "type": "string",
+            "description": "Summary of what was removed.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "modifies source files",
+          "may create git commits"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "cleanup",
+        "dead-code",
+        "refactor"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/commit",
+      "version": "1.0.0",
+      "name": "Commit",
+      "description": "Generate a conventional-commit message from the staged diff and commit. Reads the diff, analyzes the change, picks the right Conventional Commits prefix (feat/fix/refactor/chore/docs/test/ci), and commits with a descriptive message.",
+      "system_prompt_fragment": "Generate a conventional-commit message. Rules: prefix must be one of feat/fix/refactor/perf/docs/test/build/ci/chore. Subject line ≤72 chars, imperative mood, no trailing period. Body explains WHY, not what. Wrap at 72. Stage and commit. Do not amend unless explicitly asked.",
+      "applicable_domains": [
+        "code",
+        "git"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "staged_diff",
+            "type": "string",
+            "description": "The output of git diff --staged.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "commit_message",
+            "type": "string",
+            "description": "The conventional commit message used.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates a git commit in the working tree"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "commit",
+        "conventional-commits"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/diagram",
+      "version": "1.0.0",
+      "name": "Diagram",
+      "description": "Generate Mermaid diagrams (flowchart / sequence / state / class / ER / gantt) from code or systems.",
+      "system_prompt_fragment": "Generate a Mermaid diagram of the requested type. Choose the type that best communicates the relationship: flowchart for control flow, sequence for message passing, state for state machines, class for OOP relationships, ER for data models, gantt for timelines. Render in Markdown for .md files. Use ASCII art for terminal output. Never describe a diagram in prose — always render it.",
+      "applicable_domains": [
+        "documentation",
+        "architecture"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Code, system, or concept to diagram.",
+            "required": true
+          },
+          {
+            "name": "diagram_type",
+            "type": "string",
+            "description": "flowchart | sequence | state | class | ER | gantt",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "diagram",
+            "type": "string",
+            "description": "Mermaid or ASCII diagram source.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "diagram",
+        "mermaid",
+        "architecture",
+        "documentation"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/explain",
+      "version": "1.0.0",
+      "name": "Explain",
+      "description": "Read-only code explainer with audience-tuned depth (non-technical / junior / practitioner / senior) and path:line citations. Never modifies files.",
+      "system_prompt_fragment": "Explain the code or concept at the requested depth. Levels: non-technical (analogy-first, no syntax), junior (step-by-step with syntax glossed), practitioner (assumes fluency in the language), senior (architectural implications, tradeoffs, gotchas). Cite file:line for every specific claim. Never modify files during an explain session.",
+      "applicable_domains": [
+        "code",
+        "documentation"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "target",
+            "type": "string",
+            "description": "File path, symbol, or concept to explain.",
+            "required": true
+          },
+          {
+            "name": "audience",
+            "type": "string",
+            "description": "non-technical | junior | practitioner | senior",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "explanation",
+            "type": "string",
+            "description": "The explanation with path:line citations.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "explain",
+        "documentation",
+        "read-only"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-atoms",
+      "version": "1.0.0",
+      "name": "Make Atoms",
+      "description": "Discover, fetch, or scaffold skill atoms via the atoms-discover skill. Routes to the atoms binary for ecosystem operations.",
+      "system_prompt_fragment": "Delegate to the atoms-discover skill for all atom ecosystem operations: finding atoms in convergent-systems-co/skill-atoms, fetching atom JSON schemas, scaffolding new atom files, or checking whether an atom exists for a given capability. The atoms binary (built from ~/workspace/convergent-systems/atoms) is the implementation — do not confuse atom management with the ai CLI or ~/.ai/ directory.",
+      "applicable_domains": [
+        "atoms",
+        "workflow"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "operation",
+            "type": "string",
+            "description": "discover, fetch, or scaffold",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Atom discovery results, fetched schema, or scaffolded file path.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may create atom JSON files when scaffolding"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "atoms",
+        "discovery",
+        "scaffold"
+      ],
+      "lifecycle": "stable",
+      "category": "governance"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-build",
+      "version": "1.0.0",
+      "name": "Make Build",
+      "description": "Commit staged changes, push the current branch, open a pull request, and merge after CI passes.",
+      "system_prompt_fragment": "Run the build pipeline for the current branch: (1) stage and commit any uncommitted changes using conventional commits; (2) push the branch to origin; (3) open a GitHub pull request with a body generated from the branch's commit log including 'Closes #<n>' links; (4) wait for CI to pass; (5) merge the PR using merge commit (no squash). Never push to main directly. Never squash commits on non-release branches.",
+      "applicable_domains": [
+        "git",
+        "ci",
+        "workflow"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "pr_url",
+            "type": "string",
+            "description": "URL of the opened pull request.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates commits",
+          "pushes branch",
+          "opens PR",
+          "merges PR after CI"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "ci",
+        "pull-request",
+        "workflow"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-clean",
+      "version": "1.0.0",
+      "name": "Make Clean",
+      "description": "Two-command git workspace lifecycle manager: purge merged branches/worktrees/stashes, aggregate remaining in-flight work into one branch, then hand off to make build.",
+      "system_prompt_fragment": "Run the full make clean pipeline: (1) inventory all branches, worktrees, stashes; (2) delete merged branches and their worktrees (no prompt); (3) drop merged stashes; (4) aggregate in-flight branches into aggregate/<date>; (5) prune worktrees; (6) hand off to make build if aggregate branch exists. Never delete main, HEAD, or branches with uncommitted changes.",
+      "applicable_domains": [
+        "git",
+        "workflow"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "cleanup_summary",
+            "type": "string",
+            "description": "Branches deleted, stashes dropped, aggregate branch created.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "deletes git branches",
+          "removes worktrees",
+          "drops stashes",
+          "creates aggregate branch"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "cleanup",
+        "branches",
+        "worktrees"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-doctor",
+      "version": "1.0.0",
+      "name": "Make Doctor",
+      "description": "Health check for the AI governance stack and per-repo CI: runs 'ai doctor', checks hook permissions, verifies CLAUDE.md constitution includes, and reports CI status on open PRs.",
+      "system_prompt_fragment": "Run the doctor pipeline: (1) run 'ai doctor' and surface any warnings or failures; (2) verify hook files in ~/.ai/hooks/ are executable (0755); (3) check ~/.claude/CLAUDE.md contains only @~/.ai/Constitution.md (not stale four-file includes); (4) verify ~/.ai/memory/ and ~/.ai/audit/ directories exist; (5) check CI status on all open PRs in the current repo. Report each check as PASS/WARN/FAIL with remediation steps for failures. Read-only except for 'ai doctor --fix' when explicitly requested.",
+      "applicable_domains": [
+        "governance",
+        "ci",
+        "health"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "health_report",
+            "type": "string",
+            "description": "PASS/WARN/FAIL for each health check with remediation steps.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "governance",
+        "health",
+        "ci",
+        "hooks"
+      ],
+      "lifecycle": "stable",
+      "category": "governance"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-project",
+      "version": "1.0.0",
+      "name": "Make Project",
+      "description": "Build a GitHub Project (Projects v2) with a three-level Epic → Feature → Task hierarchy, sourced from GOALS.md, existing GitHub issues, and Azure DevOps work items. Uses native GitHub sub-issues to wire the hierarchy. Confirms the derived tree before creating anything.",
+      "system_prompt_fragment": "Build a GitHub Project (Projects v2) with an Epic → Feature → Task hierarchy from the available planning sources, wiring the hierarchy with native GitHub sub-issues.\n\n(1) Gather sources (use whatever is present; skip the rest):\n  - GOALS.md at the repo root — strategic intent; top-level goals map to Epics.\n  - GitHub issues — `gh issue list --state open --json number,title,labels,body,id`; cluster by label/theme.\n  - Azure DevOps (only if configured) — `az boards query` / `az boards work-item show` via the azure-devops CLI extension; map ADO Epic/Feature/User-Story/Task to the same levels.\n\n(2) Derive the tree: cluster sources into Epics, decompose each Epic into Features, each Feature into Tasks. Reuse an existing GitHub issue when a source already maps to a node — never duplicate. Print the proposed tree and STOP for user confirmation before creating anything (this mass-creates issues).\n\n(3) Create the project: `gh project create --owner <owner> --title \"<title>\"`; capture its number and URL.\n\n(4) Create one issue per node not already backed by an issue: `gh issue create --title ... --body ...`, labeling the level (kind/epic, kind/feature, kind/task).\n\n(5) Wire the hierarchy with GitHub sub-issues: each Feature is a sub-issue of its Epic; each Task a sub-issue of its Feature. Use `gh api` against the sub-issues endpoint — REST: `POST /repos/{owner}/{repo}/issues/{parent_number}/sub_issues` with body {\"sub_issue_id\": <child issue NODE id>} (numeric database id of the child issue, from the issue's `id`), or the GraphQL `addSubIssue` mutation. Confirm the exact endpoint shape with a single `gh api` call before bulk-applying, since the sub-issues API is still evolving.\n\n(6) Add every issue to the project: `gh project item-add <number> --owner <owner> --url <issue-url>`.\n\n(7) Print the final tree (Epics → Features → Tasks with issue numbers) and the project URL.\n\nConstraints: operate only on the owner/repo the user names; never touch other repos. Do not create the project or any issues until the user confirms the tree in step 2.",
+      "applicable_domains": [
+        "project-management",
+        "planning",
+        "delivery",
+        "github"
+      ],
+      "authored_by": "convergent-systems-key",
+      "lifecycle": "stable",
+      "tags": [
+        "make",
+        "project",
+        "github-projects",
+        "sub-issues",
+        "epics",
+        "planning",
+        "roadmap",
+        "azure-devops"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "owner",
+            "type": "string",
+            "required": true,
+            "description": "GitHub owner/org that will host the project and issues."
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "description": "Project title; defaults to the repo or GOALS.md heading."
+          },
+          {
+            "name": "sources",
+            "type": "string",
+            "required": false,
+            "description": "Which inputs to use: any of goals, issues, ado. Defaults to all present."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "project_url",
+            "type": "string",
+            "description": "URL of the created GitHub Project."
+          },
+          {
+            "name": "hierarchy_summary",
+            "type": "string",
+            "description": "The created Epic → Feature → Task tree with issue numbers."
+          }
+        ],
+        "side_effects": [
+          "creates a GitHub Project (Projects v2)",
+          "creates GitHub issues",
+          "links issues as GitHub sub-issues",
+          "reads Azure DevOps work items",
+          "reads GOALS.md"
+        ]
+      },
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-review",
+      "version": "1.0.0",
+      "name": "Make Review",
+      "description": "Adversarial code reviewer sweep on the current branch diff against main: stubs, placeholders, dead imports, unwired exports, and TODO/FIXME in production paths.",
+      "system_prompt_fragment": "Run a code reviewer sweep on 'git diff main...HEAD'. Hunt for: (HIGH) stubs (panic/not implemented, empty bodies, REPLACE_ME); (MEDIUM) unwired exported functions with zero non-test callers, unreachable code, TODO/FIXME in non-test files; (LOW) commented-out code blocks, dead imports. For each finding include file:line, severity, category, and a short quote (max 200 chars). Verdict: PASS (no HIGH), WARN (MEDIUM/LOW only), BLOCK (any HIGH). Read-only — do not modify files.",
+      "applicable_domains": [
+        "code-review",
+        "quality"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "review_report",
+            "type": "string",
+            "description": "Findings by severity and a PASS/WARN/BLOCK verdict.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code-review",
+        "quality",
+        "stubs",
+        "dead-code"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-sprint",
+      "version": "1.0.0",
+      "name": "Make Sprint",
+      "description": "Activate PM discipline and run the multi-agent delivery team in one shot. Recovers from checkpoints, ingests the issue queue, partitions tasks, spawns Tech Lead agents per domain, runs TDD pipelines, code reviews, and builds.",
+      "system_prompt_fragment": "Execute the full PM delivery loop: (0) check for checkpoint — resume or cold start; (1) pre-flight; (2) build repo set; (3) ingest issue queue; (4) partition into domain batches, spawn Tech Lead agents per batch running Worktree→Plan→TDD→Coder→Adversarial→PR→Merge pipeline; (5) code reviewer sweep after queue empties; (6) /make build. Never skip a pipeline step. Tech Leads must never commit directly to main.",
+      "applicable_domains": [
+        "workflow",
+        "project-management",
+        "multi-agent"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "sprint_summary",
+            "type": "string",
+            "description": "What was delivered, what is in-flight, what is blocked.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates branches",
+          "opens PRs",
+          "merges PRs",
+          "creates GitHub issues"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "workflow",
+        "pm-mode",
+        "sprint",
+        "multi-agent"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-status",
+      "version": "1.0.0",
+      "name": "Make Status",
+      "description": "Sprint status snapshot: open PRs and their CI state, stale branches, sync gap between local and origin, and any uncommitted work.",
+      "system_prompt_fragment": "Report sprint status across the repo set: (1) list all open PRs with CI status (green/red/pending) and draft state; (2) list local branches ahead of main with commit counts; (3) show the sync gap (commits on origin/main not yet in local main); (4) show uncommitted changes and stale worktrees. Format as a status board with Done / In-flight / Blocked / Next-up sections. Do not modify any files.",
+      "applicable_domains": [
+        "git",
+        "workflow"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "status_report",
+            "type": "string",
+            "description": "Sprint status board: PRs, branches, sync gap, uncommitted work.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "status",
+        "sprint",
+        "workflow"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-sync",
+      "version": "1.0.0",
+      "name": "Make Sync",
+      "description": "Pull all repos in the workspace (primary + submodules) to their default branch heads.",
+      "system_prompt_fragment": "Sync all repos in the current workspace to their remote default branch: (1) discover primary repo and all git submodules; (2) for each repo, fetch --prune, then pull the default branch (main/master) with fast-forward only; (3) report any repos where fast-forward failed (diverged) without force-pulling; (4) update submodule pointers in the parent if they changed. Never rebase, never force-pull, never modify non-default branches.",
+      "applicable_domains": [
+        "git",
+        "workflow"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "sync_summary",
+            "type": "string",
+            "description": "List of repos synced and any that diverged.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "updates local default branch",
+          "may update submodule pointers"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "sync",
+        "workflow"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make-test",
+      "version": "1.0.0",
+      "name": "Make Test",
+      "description": "Discover and run the project test suite across all workspace modules, report failures with file:line citations, and optionally fix them.",
+      "system_prompt_fragment": "Discover the test command from project.yaml or infer it from the build system. Run tests across all workspace modules (go.work, package.json workspaces, etc.). Report: total run, passed, failed. For each failure: file:line, test name, failure message, actual vs expected. Ask whether to fix failures. If fixing: create a failing test first (TDD) if one doesn't exist, then fix. One commit per fix.",
+      "applicable_domains": [
+        "testing",
+        "ci"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "pattern",
+            "type": "string",
+            "description": "Optional test name filter.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "test_results",
+            "type": "string",
+            "description": "Pass/fail summary with file:line citations for failures.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "runs test subprocess",
+          "may create commits if fixing"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "testing",
+        "ci",
+        "workspace"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/make",
+      "version": "1.0.0",
+      "name": "Make",
+      "description": "Unified make dispatcher. Delegates to the correct sub-skill (work/clean/build/test) based on the subcommand argument.",
+      "system_prompt_fragment": "Dispatch to the correct sub-skill: /make work → PM mode + multi-agent delivery team. /make clean → purge merged branches, aggregate in-flight, hand off to build. /make build → commit, push, open PR, merge. /make test → discover and run test suite. Read the subcommand and immediately invoke the matching sub-skill. Do not summarize or ask clarifying questions.",
+      "applicable_domains": [
+        "workflow",
+        "git",
+        "testing"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "subcommand",
+            "type": "string",
+            "description": "work | sprint | clean | build | test | status | sync | review | doctor | atoms",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Output of the invoked sub-skill.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "delegates to sub-skills — see their side effects"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "workflow",
+        "dispatcher",
+        "make"
+      ],
+      "lifecycle": "stable",
+      "depends_on": [
+        "make-sprint",
+        "make-clean",
+        "make-test",
+        "make-build",
+        "make-status",
+        "make-sync",
+        "make-review",
+        "make-doctor",
+        "make-atoms",
+        "make-project"
+      ],
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/onboard",
+      "version": "1.0.0",
+      "name": "Onboard",
+      "description": "Generate an ONBOARDING.md for the current repo covering: stack, prerequisites, setup, run, test, structure, and common commands. Targeted at a new contributor picking up the repo cold.",
+      "system_prompt_fragment": "Generate ONBOARDING.md for this repository. Include: What is this? (1 paragraph), Who is it for?, Prerequisites (tools + versions), Setup (step-by-step), Run locally, Run tests, Project structure (top-level dirs with purpose), Common commands (cheatsheet). Read README, package.json/go.mod/Cargo.toml/etc. to derive accurate commands. Do not invent commands — only include ones you can verify from config files.",
+      "applicable_domains": [
+        "documentation",
+        "onboarding"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "onboarding_doc",
+            "type": "string",
+            "description": "The generated ONBOARDING.md content.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "writes ONBOARDING.md to repo root"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "documentation",
+        "onboarding",
+        "getting-started"
+      ],
+      "lifecycle": "stable",
+      "category": "knowledge"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/pr",
+      "version": "1.0.0",
+      "name": "Pull Request",
+      "description": "Open a GitHub pull request with a body generated from the branch's commits. Derives title and summary from commit history.",
+      "system_prompt_fragment": "Open a pull request for the current branch. Derive: title from the most significant commit subject (≤70 chars), body from git log --oneline <base>..HEAD summarized into bullet points under ## Changes, and a ## Test plan checklist. Use gh pr create. If a PR already exists, show its URL instead. Do not push unless asked.",
+      "applicable_domains": [
+        "git",
+        "code-review"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "base_branch",
+            "type": "string",
+            "description": "Target branch (default: main).",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "pr_url",
+            "type": "string",
+            "description": "URL of the created or existing PR.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "creates a GitHub pull request via gh CLI"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "pull-request",
+        "github"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/project-claude",
+      "version": "1.0.0",
+      "name": "Project (Claude)",
+      "description": "Set up and maintain AI workspace configuration for Claude Code: project.yaml, .claude/settings.json, and CLAUDE.md. Use when initialising a project for Claude or editing its Claude-specific config.",
+      "system_prompt_fragment": "Manage Claude Code project configuration. Create or update:\n- project.yaml: tooling, test commands, build commands\n- .claude/settings.json: permissions, hooks, allowed tools\n- CLAUDE.md: project-specific instructions for Claude\n\nVerbs: setup (create all three if missing), show (display current config), set <key>=<value> (update a setting), validate (check schema). Never overwrite user-customized values without confirmation. For Copilot configuration use /project-copilot instead.",
+      "applicable_domains": [
+        "configuration",
+        "tooling"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "action",
+            "type": "string",
+            "description": "setup | show | set | validate",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Summary of configuration changes.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write project.yaml, .claude/settings.json, CLAUDE.md"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "configuration",
+        "claude",
+        "project-yaml"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/project-copilot",
+      "version": "1.0.0",
+      "name": "Project (Copilot)",
+      "description": "Set up and maintain AI workspace configuration for GitHub Copilot CLI: project.yaml and .github/copilot-instructions.md. Use when initialising a project for Copilot or editing its Copilot-specific config.",
+      "system_prompt_fragment": "Manage GitHub Copilot project configuration. Create or update:\n- project.yaml: tooling, test commands, build commands\n- .github/copilot-instructions.md: project-specific instructions for Copilot\n\nVerbs: setup (create both if missing), show (display current config), set <key>=<value> (update a setting), validate (check schema). Never overwrite user-customized values without confirmation. For Claude configuration use /project-claude instead.",
+      "applicable_domains": [
+        "configuration",
+        "tooling"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "action",
+            "type": "string",
+            "description": "setup | show | set | validate",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Summary of configuration changes.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write project.yaml, .github/copilot-instructions.md"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "configuration",
+        "copilot",
+        "project-yaml"
+      ],
+      "lifecycle": "stable",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/project-workspace",
+      "version": "1.0.0",
+      "name": "Project Workspace",
+      "description": "[Retired — use /project-claude or /project-copilot instead] Manage AI workspace configuration for a project — project.yaml, integration files, and tool settings.",
+      "system_prompt_fragment": "Set up or update the AI workspace configuration for this project. Create or update: project.yaml (tooling, test commands, build commands), .claude/settings.json (permissions, hooks), CLAUDE.md (project-specific instructions). Inspect existing configuration and propose improvements. Never overwrite user-customized values without confirmation.",
+      "applicable_domains": [
+        "configuration",
+        "tooling"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "action",
+            "type": "string",
+            "description": "setup | update | inspect | validate",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Summary of workspace configuration changes.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may write project.yaml, .claude/settings.json, CLAUDE.md"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "configuration",
+        "workspace",
+        "tooling"
+      ],
+      "lifecycle": "retired",
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/project",
+      "version": "2.0.0",
+      "name": "Project",
+      "description": "Set up AI workspace config for this project. Installs project-claude (Claude Code) and project-copilot (GitHub Copilot) together.",
+      "system_prompt_fragment": "Dispatch to the appropriate tool-specific project skill. For Claude Code setup use /project-claude. For GitHub Copilot setup use /project-copilot. When both tools are in use, both skills apply.",
+      "applicable_domains": [
+        "configuration",
+        "tooling"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "tool",
+            "type": "string",
+            "description": "claude | copilot | both (default: both)",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Summary of configuration changes.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "delegates to project-claude and/or project-copilot"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "configuration",
+        "project-yaml",
+        "dispatcher"
+      ],
+      "lifecycle": "stable",
+      "depends_on": [
+        "project-claude",
+        "project-copilot"
+      ],
+      "category": "product"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/refactor",
+      "version": "1.0.0",
+      "name": "Refactor",
+      "description": "Behavior-preserving refactor with test gates and the bug-report-separately rule. Tests must be green before and after. Bugs found during refactor are reported separately, not fixed inline.",
+      "system_prompt_fragment": "Refactor the target preserving all observable behavior. Rules: (1) Tests must be green before you start. (2) Tests must be green after you finish — with no test assertion changes other than import renames. (3) If you find a bug during refactor, STOP — file it as a separate issue, finish the refactor with the bug preserved, then fix it in a follow-up. (4) Use the refactor: commit prefix. (5) One logical change per commit.",
+      "applicable_domains": [
+        "code"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "target",
+            "type": "string",
+            "description": "File or module to refactor.",
+            "required": true
+          },
+          {
+            "name": "goal",
+            "type": "string",
+            "description": "What the refactor should achieve (rename, extract, inline, split, etc.)",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "changes",
+            "type": "string",
+            "description": "Summary of structural changes made.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "modifies source files",
+          "creates git commits"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "code",
+        "refactor",
+        "behavior-preserving",
+        "tdd"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/repo",
+      "version": "1.0.0",
+      "name": "Repo",
+      "description": "Repository structure tool — monorepo or polyrepo migration in either direction, preserving git history.",
+      "system_prompt_fragment": "Manage repository structure: convert to monorepo (merge repos with history), split a repo (extract subdirectory with history using git filter-repo), or standardize layout. Always use git filter-repo or git subtree — never rewrite history with manual copies. Preserve all commit history. Create a plan first, wait for approval, then execute.",
+      "applicable_domains": [
+        "git",
+        "architecture"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "operation",
+            "type": "string",
+            "description": "monorepo | split | extract | merge | standardize",
+            "required": true
+          },
+          {
+            "name": "target",
+            "type": "string",
+            "description": "Repository or subdirectory path.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Summary of structural changes.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "may rewrite git history",
+          "creates or modifies repositories"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "git",
+        "monorepo",
+        "polyrepo",
+        "structure"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/status",
+      "version": "1.0.0",
+      "name": "Status",
+      "description": "Mid-session blocked-state report. Reports ready state or lists active waits (biometric, pr-merge, scope-decision, out-of-band, background) using the Common.md §U7 typed wait-reason format.",
+      "system_prompt_fragment": "Report current session status. If nothing is pending: 'Status: ready — no pending actions.' If blocked: list each wait with its typed reason (biometric / pr-merge / scope-decision / out-of-band / background) and a description. Check TaskList for in-progress tasks. Limit output to ≤10 lines.",
+      "applicable_domains": [
+        "session-management"
+      ],
+      "invocation_contract": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Current status: ready or waiting-on list.",
+            "required": true
+          }
+        ],
+        "side_effects": []
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "session",
+        "status",
+        "blocked",
+        "waiting"
+      ],
+      "lifecycle": "stable",
+      "category": "governance"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/test",
+      "version": "1.0.0",
+      "name": "Test",
+      "description": "Run repo tests via project.yaml's tooling.test_command and report failures with path:line citations.",
+      "system_prompt_fragment": "Run the test suite using the command from project.yaml tooling.test_command, or infer it from the project's build system (go test, npm test, pytest, cargo test, etc.). Report every failure with file:line:column, the failing assertion, and the actual vs expected values. Do not suppress passing tests — show the full summary. If tests pass, confirm and give the count.",
+      "applicable_domains": [
+        "code",
+        "testing"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "pattern",
+            "type": "string",
+            "description": "Optional test name pattern to filter.",
+            "required": false
+          }
+        ],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "string",
+            "description": "Pass/fail summary with path:line citations for failures.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "runs test subprocess"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "testing",
+        "ci",
+        "tdd"
+      ],
+      "lifecycle": "stable",
+      "category": "coding"
+    },
+    {
+      "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+      "type": "skill",
+      "id": "skill/update-config",
+      "version": "1.0.0",
+      "name": "Update Config",
+      "description": "Configure the Claude Code harness via settings.json. Handles: automated behaviors (hooks), permissions, env vars, hook troubleshooting, and changes to settings.json/settings.local.json files.",
+      "system_prompt_fragment": "Configure Claude Code settings.json. Automated behaviors require hooks — the harness executes them, not Claude. For permissions: add to allowedTools or use permissionPromptTool. For env vars: add to env block. For hooks: wire to the correct event (UserPromptSubmit/PreToolUse/PostToolUse/Stop/etc.) in the hooks block. Show the diff of settings.json changes before applying. Never edit settings.json directly — use the appropriate settings API or targeted edits.",
+      "applicable_domains": [
+        "configuration",
+        "tooling"
+      ],
+      "invocation_contract": {
+        "inputs": [
+          {
+            "name": "change_request",
+            "type": "string",
+            "description": "What the user wants to configure.",
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "name": "settings_diff",
+            "type": "string",
+            "description": "The diff applied to settings.json.",
+            "required": true
+          }
+        ],
+        "side_effects": [
+          "modifies .claude/settings.json or ~/.claude/settings.json"
+        ]
+      },
+      "authored_by": "convergent-systems-key",
+      "tags": [
+        "configuration",
+        "settings",
+        "hooks",
+        "permissions"
+      ],
+      "lifecycle": "stable",
+      "category": "governance"
+    }
+  ],
+  "rules": []
+}

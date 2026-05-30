@@ -1,6 +1,6 @@
 ---
 const { atom } = Astro.props;
-const href = `/atoms/${atom.type}/${atom.id}/`;
+const href = `/atoms/${atom.type}/${atom.id.replace(/^[^/]+\//, "")}/`;
 ---
 <article style="border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: var(--card);">
   <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem;">

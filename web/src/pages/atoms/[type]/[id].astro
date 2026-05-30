@@ -4,12 +4,16 @@ import catalog from "../../../../public/exports/catalog.json";
 
 export function getStaticPaths() {
   return catalog.atoms.map((atom: any) => ({
-    params: { type: atom.type, id: atom.id },
+    // atom.id is namespaced "<type>/<slug>"; strip the leading "<type>/" so the
+    // single [id] route param has no embedded slash (a slash yields an invalid
+    // path like /atoms/skill/skill/<slug> and breaks the build).
+    params: { type: atom.type, id: atom.id.replace(/^[^/]+\//, "") },
     props: { atom },
   }));
 }
 
 const { atom } = Astro.props;
+const bareId = atom.id.replace(/^[^/]+\//, ""); // slug without the "<type>/" prefix
 
 // Pick the type-specific payload
 const skillSpec = atom.skill_spec;
@@ -88,5 +92,5 @@ const trustBoundary = atom.trust_boundary;
   )}
 
   <h2>Raw atom</h2>
-  <p><a href={`/atoms/${atom.type}/${atom.id}.json`}>/atoms/{atom.type}/{atom.id}.json</a> · <a href="/schemas/atom-v1.json">schema</a></p>
+  <p><a href={`/atoms/${atom.type}/${bareId}.json`}>/atoms/{atom.type}/{bareId}.json</a> · <a href="/schemas/atom-v1.json">schema</a></p>
 </Base>

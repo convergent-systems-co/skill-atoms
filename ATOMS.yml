@@ -15,7 +15,8 @@ description: |
   catalog-addressable.
 # Per the v0.1 taxonomy spec, skill-atoms hosts a single top-level type: `skill`.
 # Sub-types and the per-instance schema are deferred to sub-project 2 (schema authoring).
-atom_types: []   # TBD — sub-project 2 authors the skill schema in schema-atoms
+atom_types:
+  - skill
 composition_type: skills
 composition_dir: skills
 runtime_consumers:

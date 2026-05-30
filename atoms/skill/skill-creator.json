@@ -1,0 +1,24 @@
+{
+  "schema": "https://skill-atoms.com/schemas/atom-v1.json",
+  "type": "skill",
+  "id": "skill/skill-creator",
+  "version": "1.0.0",
+  "name": "Skill Creator",
+  "description": "Create new skills, modify and improve existing skills, and measure skill performance. Guides through the full skill lifecycle: capture intent → research → write SKILL.md → test with evals → iterate. Use when creating a skill from scratch, editing an existing skill, running evals, or optimizing a skill's triggering description.",
+  "system_prompt_fragment": "Create or improve a skill. Step 1 CAPTURE: understand what the skill should do, when it triggers, what the output format is. Step 2 RESEARCH: explore edge cases, input/output formats, dependencies. Step 3 WRITE: produce SKILL.md with name, description (include specific trigger contexts), and body instructions explaining WHY not just WHAT. Step 4 TEST: write 2-3 realistic test prompts; spawn parallel runs (with-skill vs without). Step 5 GRADE: evaluate results against assertions; launch the eval viewer. Step 6 ITERATE: improve the skill based on feedback. Repeat until results are satisfactory.",
+  "applicable_domains": ["skills", "meta", "evaluation"],
+  "invocation_contract": {
+    "inputs": [
+      { "name": "skill_intent", "type": "string", "description": "What the skill should do and when it should trigger.", "required": true },
+      { "name": "existing_skill_path", "type": "string", "description": "Path to an existing SKILL.md to improve, if applicable.", "required": false }
+    ],
+    "outputs": [
+      { "name": "skill_md", "type": "string", "description": "The written or updated SKILL.md content.", "required": true },
+      { "name": "eval_results", "type": "string", "description": "Evaluation results comparing with-skill vs without-skill runs.", "required": false }
+    ],
+    "side_effects": ["writes SKILL.md file", "may spawn parallel eval agents"]
+  },
+  "authored_by": "convergent-systems-key",
+  "tags": ["skill", "meta", "eval", "creation"],
+  "lifecycle": "stable"
+}
